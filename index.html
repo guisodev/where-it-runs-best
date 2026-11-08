@@ -49,6 +49,7 @@ header.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;pa
 .tierbar{display:flex;gap:3px;align-items:flex-end;height:18px}
 .tierbar i{width:5px;background:var(--line);border-radius:1px}
 .tierbar i.on{background:var(--accent)}
+.lang select{background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:13px}
 .gpu{font-family:var(--f-mono);font-size:12px;padding:2px 7px;border-radius:4px;background:var(--sunk);color:var(--muted)}
 
 .intro{padding-block:22px 6px;display:grid;gap:6px}
@@ -118,19 +119,20 @@ footer a{color:inherit}
 
 <header class="top">
   <div class="wrap">
-    <div class="brand">¿Dónde <b>corre</b>? <small>android · comunidad</small></div>
+    <div class="brand"><span id="brand">¿Dónde <b>corre</b>?</span> <small id="tag">android · comunidad</small></div>
     <div class="device">
-      <label for="chip">Tu equipo</label>
+      <label for="chip" id="deviceLabel">Tu equipo</label>
       <select id="chip"></select>
       <span class="tierbar" id="tierbar" aria-hidden="true"></span>
       <span class="gpu" id="gpu"></span>
     </div>
+    <div class="lang"><label class="sr" for="lang" id="langLabel">Idioma</label><select id="lang"></select></div>
   </div>
 </header>
 
 <section class="wrap intro">
-  <h1>¿En qué emulador corre mejor tu juego en Android?</h1>
-  <p>Elige tu chip y busca un juego. Te mostramos las notas que ha dado la comunidad de EmuReady en tu mismo chip o, si no hay, en chips de tu gama.</p>
+  <h1 id="h1">¿En qué emulador corre mejor tu juego en Android?</h1>
+  <p id="lead">Elige tu chip y busca un juego. Te mostramos las notas que ha dado la comunidad de EmuReady en tu mismo chip o, si no hay, en chips de tu gama.</p>
   <p class="src" id="erinfo">Cargando reportes de EmuReady…</p>
 </section>
 
@@ -138,7 +140,7 @@ footer a{color:inherit}
   <section aria-label="Juegos">
     <div class="search">
       <input id="q" type="search" placeholder="Busca un juego… (ej. Mario Odyssey, God of War)" autocomplete="off">
-      <label class="sr" for="plat">Consola original</label>
+      <label class="sr" for="plat" id="platLabel">Consola original</label>
       <select id="plat"></select>
     </div>
     <p class="count" id="count"></p>
@@ -153,8 +155,8 @@ footer a{color:inherit}
 </main>
 
 <footer class="wrap">
-  <p>Todos los datos provienen de <a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a>, una base de datos comunitaria de compatibilidad. Se usan sin fines comerciales y cada juego enlaza a su ficha original, donde puedes leer los detalles y aportar tu propio reporte.</p>
-  <p>La agrupación de chips por gama es una aproximación de esta app y solo se usa cuando no hay reportes de tu chip exacto. Los emuladores y ports requieren tus propios archivos del juego.</p>
+  <p id="footer1">Todos los datos provienen de <a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a>, una base de datos comunitaria de compatibilidad. Se usan sin fines comerciales y cada juego enlaza a su ficha original, donde puedes leer los detalles y aportar tu propio reporte.</p>
+  <p id="footer2">La agrupación de chips por gama es una aproximación de esta app y solo se usa cuando no hay reportes de tu chip exacto. Los emuladores y ports requieren tus propios archivos del juego.</p>
 </footer>
 
 <script>
@@ -174,7 +176,7 @@ const CHIPS = [
   {g:"MediaTek (Mali / Immortalis)", id:"d8k",  n:"Dimensity 8100–8500 / 9000 / 9200", tier:4, gpu:"mali"},
   {g:"MediaTek (Mali / Immortalis)", id:"d1k",  n:"Dimensity 1100 / 1200 / 7300 (Retroid Pocket 4 Pro)", tier:3, gpu:"mali"},
   {g:"MediaTek (Mali / Immortalis)", id:"g99",  n:"Helio G99 / Dimensity 6080 / 700–900", tier:2, gpu:"mali"},
-  {g:"MediaTek (Mali / Immortalis)", id:"g85",  n:"Helio G85 / Unisoc / RK3566 / H700 (gama de entrada)", tier:1, gpu:"mali"},
+  {g:"MediaTek (Mali / Immortalis)", id:"g85",  n:"Helio G85 / Unisoc / RK3566 / H700 ({entry})", tier:1, gpu:"mali"},
   {g:"Samsung Exynos", id:"ex24", n:"Exynos 2400 / 2500 / 2600 (Xclipse)", tier:4, gpu:"xclipse"},
   {g:"Samsung Exynos", id:"ex14", n:"Exynos 1280–1580", tier:2, gpu:"mali"},
   {g:"Google Tensor", id:"tg5", n:"Tensor G5 (PowerVR, Pixel 10)", tier:4, gpu:"powervr"},
@@ -183,10 +185,217 @@ const CHIPS = [
 const GPU_LABEL = {adreno:"Adreno", mali:"Mali", xclipse:"Xclipse", powervr:"PowerVR"};
 const chipById = Object.fromEntries(CHIPS.map(c => [c.id, c]));
 
+// ───────── Idiomas ─────────
+const STR = {
+es:{
+  docTitle:"Dónde corre mejor", brand:"¿Dónde <b>corre</b>?", tag:"android · comunidad", device:"Tu equipo", langLabel:"Idioma",
+  gpuLine:"GPU {gpu} · gama {t}/5", entry:"gama de entrada",
+  h1:"¿En qué emulador corre mejor tu juego en Android?",
+  lead:"Elige tu chip y busca un juego. Te mostramos las notas que ha dado la comunidad de EmuReady en tu mismo chip o, si no hay, en chips de tu gama.",
+  loading:"Cargando reportes de EmuReady…", info:"{n} reportes sobre {g} juegos · datos de {link} actualizados el {d}",
+  search:"Busca un juego… (ej. Mario Odyssey, God of War)", platLabel:"Consola original", allPlat:"Todas las consolas", filtersLabel:"Filtrar",
+  fAll:"Todos", fMine:"Reportados en mi chip", fGood:"Van bien en mi equipo",
+  countShown:"Mostrando {a} de {b}; busca para afinar", countAll:"{a} de {b} juegos", reset:"Quitar filtros",
+  empty:"Ningún juego coincide. Prueba con otro nombre o quita los filtros.",
+  cardMine:"{s} · {n} en tu chip", cardAll:"{s} · {n} reportes",
+  scopeExact:"en {chip}", scopeTier:"en chips de tu gama ({gpu}, {t}/5)", scopeAll:"en todos los dispositivos", noAdreno:"sin Adreno",
+  loadMeta:"CARGANDO", loadH:"Preparando los reportes…",
+  gameMeta:"{n} reportes en EmuReady", bestEmu:"Mejor emulador {scope}",
+  fewOne:"Solo hay 1 reporte {scope}: tómalo como orientación y mira también los chips de abajo.",
+  fewMany:"Solo hay {n} reportes {scope}: tómalo como orientación y mira también los chips de abajo.",
+  tierNotice:"Nadie lo ha reportado aún en tu chip exacto; usamos {n} reportes de chips de tu gama.",
+  allNotice:"No hay reportes en tu chip ni en tu gama. Se muestran todos los dispositivos; en tu equipo puede ir distinto.",
+  emusHead:"Emuladores · {n} reportes {scope}", socsHead:"Chips con más reportes",
+  thEmu:"Emulador", thRep:"Rep.", thDist:"Distribución", thMed:"Mediana", thChip:"Chip", thSys:"Consola", thBest:"Emulador con mejor nota",
+  moreLink:"Detalles, ajustes y notas de cada reporte: {link}", seeOn:"ver {g} en EmuReady",
+  noGameMeta:"SIN JUEGO SELECCIONADO", noGameH:"Toca un juego de la lista",
+  dotHelp:"El punto de color indica la nota del mejor emulador en tu {chip}. Atenuado: no hay reportes de tu chip ni de tu gama.",
+  overviewHead:"Por consola · tu chip y tu gama",
+  overviewNote:"Emulador mejor valorado entre los que tienen al menos el 10 % de los reportes de cada consola; los juegos más exigentes pueden ir peor.",
+  overviewNone:"Todavía no hay reportes de chips como el tuyo.",
+  errInfo:"No se pudieron cargar los reportes. Recarga la página para intentarlo de nuevo.", errMeta:"SIN DATOS", errH:"No se pudieron cargar los reportes",
+  errP:"Recarga la página. Si sigue fallando, la copia de datos puede estar actualizándose.",
+  footer1:"Todos los datos provienen de {link}, una base de datos comunitaria de compatibilidad. Se usan sin fines comerciales y cada juego enlaza a su ficha original, donde puedes leer los detalles y aportar tu propio reporte.",
+  footer2:"La agrupación de chips por gama es una aproximación de esta app y solo se usa cuando no hay reportes de tu chip exacto. Los emuladores requieren tus propios archivos del juego.",
+  ranks:["Perfecto","Genial","Jugable","Pobre","Entra al juego","Solo intro","Solo carga","No arranca"], legendWorst:"Entra al juego o peor",
+},
+en:{
+  docTitle:"Where it runs best", brand:"Where does it <b>run</b>?", tag:"android · community", device:"Your device", langLabel:"Language",
+  gpuLine:"GPU {gpu} · tier {t}/5", entry:"entry level",
+  h1:"Which emulator runs your game best on Android?",
+  lead:"Pick your chip and search for a game. We show the ratings the EmuReady community has given on your exact chip or, if there are none, on chips in your tier.",
+  loading:"Loading EmuReady reports…", info:"{n} reports on {g} games · data from {link}, updated {d}",
+  search:"Search for a game… (e.g. Mario Odyssey, God of War)", platLabel:"Original console", allPlat:"All consoles", filtersLabel:"Filter",
+  fAll:"All", fMine:"Reported on my chip", fGood:"Run well on my device",
+  countShown:"Showing {a} of {b}; search to narrow down", countAll:"{a} of {b} games", reset:"Clear filters",
+  empty:"No games match. Try another name or clear the filters.",
+  cardMine:"{s} · {n} on your chip", cardAll:"{s} · {n} reports",
+  scopeExact:"on {chip}", scopeTier:"on chips in your tier ({gpu}, {t}/5)", scopeAll:"on all devices", noAdreno:"non-Adreno",
+  loadMeta:"LOADING", loadH:"Preparing the reports…",
+  gameMeta:"{n} reports on EmuReady", bestEmu:"Best emulator {scope}",
+  fewOne:"Only 1 report {scope}: treat it as a hint and check the chips below too.",
+  fewMany:"Only {n} reports {scope}: treat them as a hint and check the chips below too.",
+  tierNotice:"No one has reported it on your exact chip yet; we use {n} reports from chips in your tier.",
+  allNotice:"No reports on your chip or tier. Showing all devices; it may run differently on yours.",
+  emusHead:"Emulators · {n} reports {scope}", socsHead:"Chips with the most reports",
+  thEmu:"Emulator", thRep:"Rep.", thDist:"Distribution", thMed:"Median", thChip:"Chip", thSys:"Console", thBest:"Top-rated emulator",
+  moreLink:"Details, settings and notes for each report: {link}", seeOn:"see {g} on EmuReady",
+  noGameMeta:"NO GAME SELECTED", noGameH:"Tap a game in the list",
+  dotHelp:"The colored dot shows the best emulator's rating on your {chip}. Faded: no reports for your chip or tier.",
+  overviewHead:"By console · your chip and tier",
+  overviewNote:"Best-rated emulator among those with at least 10% of each console's reports; the most demanding games may run worse.",
+  overviewNone:"There are no reports from chips like yours yet.",
+  errInfo:"Couldn't load the reports. Reload the page to try again.", errMeta:"NO DATA", errH:"Couldn't load the reports",
+  errP:"Reload the page. If it keeps failing, the data copy may be updating.",
+  footer1:"All data comes from {link}, a community compatibility database. It is used non-commercially and every game links to its original page, where you can read the details and add your own report.",
+  footer2:"Grouping chips by tier is this app's approximation and is only used when there are no reports for your exact chip. Emulators require your own game files.",
+  ranks:["Perfect","Great","Playable","Poor","In-game","Intro only","Loads only","Nothing"], legendWorst:"In-game or worse",
+},
+pt:{
+  docTitle:"Onde roda melhor", brand:"Onde <b>roda</b>?", tag:"android · comunidade", device:"Seu aparelho", langLabel:"Idioma",
+  gpuLine:"GPU {gpu} · faixa {t}/5", entry:"entrada",
+  h1:"Em qual emulador seu jogo roda melhor no Android?",
+  lead:"Escolha seu chip e busque um jogo. Mostramos as notas que a comunidade do EmuReady deu no seu chip ou, se não houver, em chips da mesma faixa.",
+  loading:"Carregando relatos do EmuReady…", info:"{n} relatos sobre {g} jogos · dados do {link} atualizados em {d}",
+  search:"Busque um jogo… (ex.: Mario Odyssey, God of War)", platLabel:"Console original", allPlat:"Todos os consoles", filtersLabel:"Filtrar",
+  fAll:"Todos", fMine:"Relatados no meu chip", fGood:"Rodam bem no meu aparelho",
+  countShown:"Mostrando {a} de {b}; busque para refinar", countAll:"{a} de {b} jogos", reset:"Limpar filtros",
+  empty:"Nenhum jogo encontrado. Tente outro nome ou limpe os filtros.",
+  cardMine:"{s} · {n} no seu chip", cardAll:"{s} · {n} relatos",
+  scopeExact:"no {chip}", scopeTier:"em chips da sua faixa ({gpu}, {t}/5)", scopeAll:"em todos os aparelhos", noAdreno:"sem Adreno",
+  loadMeta:"CARREGANDO", loadH:"Preparando os relatos…",
+  gameMeta:"{n} relatos no EmuReady", bestEmu:"Melhor emulador {scope}",
+  fewOne:"Há só 1 relato {scope}: use como referência e veja também os chips abaixo.",
+  fewMany:"Há só {n} relatos {scope}: use como referência e veja também os chips abaixo.",
+  tierNotice:"Ninguém relatou ainda no seu chip exato; usamos {n} relatos de chips da sua faixa.",
+  allNotice:"Não há relatos no seu chip nem na sua faixa. Mostrando todos os aparelhos; no seu pode rodar diferente.",
+  emusHead:"Emuladores · {n} relatos {scope}", socsHead:"Chips com mais relatos",
+  thEmu:"Emulador", thRep:"Rel.", thDist:"Distribuição", thMed:"Mediana", thChip:"Chip", thSys:"Console", thBest:"Emulador com melhor nota",
+  moreLink:"Detalhes, ajustes e notas de cada relato: {link}", seeOn:"ver {g} no EmuReady",
+  noGameMeta:"NENHUM JOGO SELECIONADO", noGameH:"Toque em um jogo da lista",
+  dotHelp:"O ponto colorido indica a nota do melhor emulador no seu {chip}. Esmaecido: não há relatos do seu chip nem da sua faixa.",
+  overviewHead:"Por console · seu chip e sua faixa",
+  overviewNote:"Emulador mais bem avaliado entre os que têm pelo menos 10% dos relatos de cada console; os jogos mais pesados podem rodar pior.",
+  overviewNone:"Ainda não há relatos de chips como o seu.",
+  errInfo:"Não foi possível carregar os relatos. Recarregue a página para tentar de novo.", errMeta:"SEM DADOS", errH:"Não foi possível carregar os relatos",
+  errP:"Recarregue a página. Se continuar falhando, a cópia dos dados pode estar sendo atualizada.",
+  footer1:"Todos os dados vêm do {link}, um banco de dados comunitário de compatibilidade. São usados sem fins comerciais e cada jogo leva à sua página original, onde você pode ler os detalhes e enviar seu próprio relato.",
+  footer2:"O agrupamento de chips por faixa é uma aproximação deste app e só é usado quando não há relatos do seu chip exato. Os emuladores exigem seus próprios arquivos do jogo.",
+  ranks:["Perfeito","Ótimo","Jogável","Ruim","Entra no jogo","Só a intro","Só carrega","Não abre"], legendWorst:"Entra no jogo ou pior",
+},
+fr:{
+  docTitle:"Où ça tourne le mieux", brand:"Où ça <b>tourne</b> ?", tag:"android · communauté", device:"Votre appareil", langLabel:"Langue",
+  gpuLine:"GPU {gpu} · gamme {t}/5", entry:"entrée de gamme",
+  h1:"Sur quel émulateur votre jeu tourne-t-il le mieux sous Android ?",
+  lead:"Choisissez votre puce et cherchez un jeu. Nous affichons les notes données par la communauté EmuReady sur votre puce exacte ou, à défaut, sur des puces de la même gamme.",
+  loading:"Chargement des rapports EmuReady…", info:"{n} rapports sur {g} jeux · données {link} mises à jour le {d}",
+  search:"Rechercher un jeu… (ex. Mario Odyssey, God of War)", platLabel:"Console d'origine", allPlat:"Toutes les consoles", filtersLabel:"Filtrer",
+  fAll:"Tous", fMine:"Signalés sur ma puce", fGood:"Tournent bien sur mon appareil",
+  countShown:"{a} sur {b} affichés ; affinez avec la recherche", countAll:"{a} sur {b} jeux", reset:"Effacer les filtres",
+  empty:"Aucun jeu ne correspond. Essayez un autre nom ou effacez les filtres.",
+  cardMine:"{s} · {n} sur votre puce", cardAll:"{s} · {n} rapports",
+  scopeExact:"sur {chip}", scopeTier:"sur des puces de votre gamme ({gpu}, {t}/5)", scopeAll:"sur tous les appareils", noAdreno:"hors Adreno",
+  loadMeta:"CHARGEMENT", loadH:"Préparation des rapports…",
+  gameMeta:"{n} rapports sur EmuReady", bestEmu:"Meilleur émulateur {scope}",
+  fewOne:"Un seul rapport {scope} : prenez-le comme indication et regardez aussi les puces ci-dessous.",
+  fewMany:"Seulement {n} rapports {scope} : prenez-les comme indication et regardez aussi les puces ci-dessous.",
+  tierNotice:"Personne ne l'a encore signalé sur votre puce exacte ; nous utilisons {n} rapports de puces de votre gamme.",
+  allNotice:"Aucun rapport sur votre puce ni votre gamme. Tous les appareils sont affichés ; le résultat peut différer sur le vôtre.",
+  emusHead:"Émulateurs · {n} rapports {scope}", socsHead:"Puces les plus signalées",
+  thEmu:"Émulateur", thRep:"Rapp.", thDist:"Répartition", thMed:"Médiane", thChip:"Puce", thSys:"Console", thBest:"Émulateur le mieux noté",
+  moreLink:"Détails, réglages et notes de chaque rapport : {link}", seeOn:"voir {g} sur EmuReady",
+  noGameMeta:"AUCUN JEU SÉLECTIONNÉ", noGameH:"Touchez un jeu dans la liste",
+  dotHelp:"Le point coloré indique la note du meilleur émulateur sur votre {chip}. Estompé : aucun rapport pour votre puce ni votre gamme.",
+  overviewHead:"Par console · votre puce et votre gamme",
+  overviewNote:"Émulateur le mieux noté parmi ceux qui ont au moins 10 % des rapports de chaque console ; les jeux les plus exigeants peuvent tourner moins bien.",
+  overviewNone:"Pas encore de rapports pour des puces comme la vôtre.",
+  errInfo:"Impossible de charger les rapports. Rechargez la page pour réessayer.", errMeta:"AUCUNE DONNÉE", errH:"Impossible de charger les rapports",
+  errP:"Rechargez la page. Si l'erreur persiste, la copie des données est peut-être en cours de mise à jour.",
+  footer1:"Toutes les données proviennent de {link}, une base de données communautaire de compatibilité. Elles sont utilisées sans but commercial et chaque jeu renvoie à sa fiche d'origine, où vous pouvez lire les détails et ajouter votre propre rapport.",
+  footer2:"Le regroupement des puces par gamme est une approximation de cette appli, utilisée seulement sans rapport pour votre puce exacte. Les émulateurs nécessitent vos propres fichiers de jeu.",
+  ranks:["Parfait","Excellent","Jouable","Médiocre","En jeu","Intro seulement","Se charge","Ne démarre pas"], legendWorst:"En jeu ou pire",
+},
+de:{
+  docTitle:"Wo es am besten läuft", brand:"Wo <b>läuft</b>'s?", tag:"android · community", device:"Dein Gerät", langLabel:"Sprache",
+  gpuLine:"GPU {gpu} · Klasse {t}/5", entry:"Einstiegsklasse",
+  h1:"Mit welchem Emulator läuft dein Spiel auf Android am besten?",
+  lead:"Wähle deinen Chip und suche ein Spiel. Wir zeigen die Bewertungen der EmuReady-Community für genau deinen Chip oder, falls es keine gibt, für Chips derselben Klasse.",
+  loading:"EmuReady-Berichte werden geladen…", info:"{n} Berichte zu {g} Spielen · Daten von {link}, Stand {d}",
+  search:"Spiel suchen… (z. B. Mario Odyssey, God of War)", platLabel:"Ursprüngliche Konsole", allPlat:"Alle Konsolen", filtersLabel:"Filtern",
+  fAll:"Alle", fMine:"Auf meinem Chip gemeldet", fGood:"Laufen gut auf meinem Gerät",
+  countShown:"{a} von {b} angezeigt; suche zum Eingrenzen", countAll:"{a} von {b} Spielen", reset:"Filter zurücksetzen",
+  empty:"Kein Spiel gefunden. Versuche einen anderen Namen oder setze die Filter zurück.",
+  cardMine:"{s} · {n} auf deinem Chip", cardAll:"{s} · {n} Berichte",
+  scopeExact:"auf {chip}", scopeTier:"auf Chips deiner Klasse ({gpu}, {t}/5)", scopeAll:"auf allen Geräten", noAdreno:"ohne Adreno",
+  loadMeta:"LÄDT", loadH:"Berichte werden vorbereitet…",
+  gameMeta:"{n} Berichte auf EmuReady", bestEmu:"Bester Emulator {scope}",
+  fewOne:"Nur 1 Bericht {scope}: nimm ihn als Anhaltspunkt und sieh dir auch die Chips unten an.",
+  fewMany:"Nur {n} Berichte {scope}: nimm sie als Anhaltspunkt und sieh dir auch die Chips unten an.",
+  tierNotice:"Noch niemand hat es auf genau deinem Chip gemeldet; wir nutzen {n} Berichte von Chips deiner Klasse.",
+  allNotice:"Keine Berichte für deinen Chip oder deine Klasse. Es werden alle Geräte gezeigt; auf deinem kann es anders laufen.",
+  emusHead:"Emulatoren · {n} Berichte {scope}", socsHead:"Chips mit den meisten Berichten",
+  thEmu:"Emulator", thRep:"Ber.", thDist:"Verteilung", thMed:"Median", thChip:"Chip", thSys:"Konsole", thBest:"Bestbewerteter Emulator",
+  moreLink:"Details, Einstellungen und Notizen zu jedem Bericht: {link}", seeOn:"{g} auf EmuReady ansehen",
+  noGameMeta:"KEIN SPIEL AUSGEWÄHLT", noGameH:"Tippe auf ein Spiel in der Liste",
+  dotHelp:"Der farbige Punkt zeigt die Bewertung des besten Emulators auf deinem {chip}. Blass: keine Berichte für deinen Chip oder deine Klasse.",
+  overviewHead:"Nach Konsole · dein Chip und deine Klasse",
+  overviewNote:"Bestbewerteter Emulator unter denen mit mindestens 10 % der Berichte pro Konsole; die anspruchsvollsten Spiele können schlechter laufen.",
+  overviewNone:"Noch keine Berichte von Chips wie deinem.",
+  errInfo:"Die Berichte konnten nicht geladen werden. Lade die Seite neu, um es erneut zu versuchen.", errMeta:"KEINE DATEN", errH:"Die Berichte konnten nicht geladen werden",
+  errP:"Lade die Seite neu. Wenn es weiter fehlschlägt, wird die Datenkopie vielleicht gerade aktualisiert.",
+  footer1:"Alle Daten stammen von {link}, einer Community-Datenbank zur Kompatibilität. Sie werden nicht kommerziell genutzt, und jedes Spiel verlinkt auf seine Originalseite, wo du Details lesen und einen eigenen Bericht beitragen kannst.",
+  footer2:"Die Einteilung der Chips in Klassen ist eine Näherung dieser App und wird nur genutzt, wenn es keine Berichte für genau deinen Chip gibt. Emulatoren benötigen deine eigenen Spieldateien.",
+  ranks:["Perfekt","Sehr gut","Spielbar","Schlecht","Im Spiel","Nur Intro","Lädt nur","Startet nicht"], legendWorst:"Im Spiel oder schlechter",
+},
+it:{
+  docTitle:"Dove gira meglio", brand:"Dove <b>gira</b>?", tag:"android · community", device:"Il tuo dispositivo", langLabel:"Lingua",
+  gpuLine:"GPU {gpu} · fascia {t}/5", entry:"fascia bassa",
+  h1:"Con quale emulatore il tuo gioco gira meglio su Android?",
+  lead:"Scegli il tuo chip e cerca un gioco. Mostriamo i voti dati dalla community di EmuReady sul tuo chip o, se non ce ne sono, su chip della stessa fascia.",
+  loading:"Caricamento dei report di EmuReady…", info:"{n} report su {g} giochi · dati di {link} aggiornati il {d}",
+  search:"Cerca un gioco… (es. Mario Odyssey, God of War)", platLabel:"Console originale", allPlat:"Tutte le console", filtersLabel:"Filtra",
+  fAll:"Tutti", fMine:"Segnalati sul mio chip", fGood:"Girano bene sul mio dispositivo",
+  countShown:"Mostrati {a} di {b}; cerca per restringere", countAll:"{a} di {b} giochi", reset:"Rimuovi filtri",
+  empty:"Nessun gioco corrisponde. Prova un altro nome o rimuovi i filtri.",
+  cardMine:"{s} · {n} sul tuo chip", cardAll:"{s} · {n} report",
+  scopeExact:"su {chip}", scopeTier:"su chip della tua fascia ({gpu}, {t}/5)", scopeAll:"su tutti i dispositivi", noAdreno:"non Adreno",
+  loadMeta:"CARICAMENTO", loadH:"Preparazione dei report…",
+  gameMeta:"{n} report su EmuReady", bestEmu:"Miglior emulatore {scope}",
+  fewOne:"C'è solo 1 report {scope}: prendilo come indicazione e guarda anche i chip qui sotto.",
+  fewMany:"Ci sono solo {n} report {scope}: prendili come indicazione e guarda anche i chip qui sotto.",
+  tierNotice:"Nessuno l'ha ancora segnalato sul tuo chip esatto; usiamo {n} report di chip della tua fascia.",
+  allNotice:"Nessun report sul tuo chip né sulla tua fascia. Mostriamo tutti i dispositivi; sul tuo potrebbe girare diversamente.",
+  emusHead:"Emulatori · {n} report {scope}", socsHead:"Chip con più report",
+  thEmu:"Emulatore", thRep:"Rep.", thDist:"Distribuzione", thMed:"Mediana", thChip:"Chip", thSys:"Console", thBest:"Emulatore con il voto migliore",
+  moreLink:"Dettagli, impostazioni e note di ogni report: {link}", seeOn:"vedi {g} su EmuReady",
+  noGameMeta:"NESSUN GIOCO SELEZIONATO", noGameH:"Tocca un gioco nell'elenco",
+  dotHelp:"Il punto colorato indica il voto del miglior emulatore sul tuo {chip}. Sbiadito: nessun report per il tuo chip o la tua fascia.",
+  overviewHead:"Per console · il tuo chip e la tua fascia",
+  overviewNote:"Emulatore con il voto migliore tra quelli con almeno il 10% dei report di ogni console; i giochi più pesanti possono girare peggio.",
+  overviewNone:"Non ci sono ancora report di chip come il tuo.",
+  errInfo:"Impossibile caricare i report. Ricarica la pagina per riprovare.", errMeta:"NESSUN DATO", errH:"Impossibile caricare i report",
+  errP:"Ricarica la pagina. Se continua a non funzionare, la copia dei dati potrebbe essere in aggiornamento.",
+  footer1:"Tutti i dati provengono da {link}, un database di compatibilità della community. Sono usati senza fini commerciali e ogni gioco rimanda alla sua scheda originale, dove puoi leggere i dettagli e aggiungere il tuo report.",
+  footer2:"Il raggruppamento dei chip per fascia è un'approssimazione di questa app e si usa solo quando non ci sono report per il tuo chip esatto. Gli emulatori richiedono i tuoi file di gioco.",
+  ranks:["Perfetto","Ottimo","Giocabile","Scarso","Entra in gioco","Solo intro","Si carica","Non si avvia"], legendWorst:"Entra in gioco o peggio",
+},
+};
+const LANGS = [["es","Español"],["en","English"],["pt","Português"],["fr","Français"],["de","Deutsch"],["it","Italiano"]];
+
+const pickLang = () => {
+  let saved = null; try { saved = localStorage.getItem("dc-lang"); } catch(e){}
+  if (saved && STR[saved]) return saved;
+  const nav = (navigator.languages || [navigator.language || "es"]).map(l => l.slice(0, 2).toLowerCase());
+  return nav.find(l => STR[l]) || "en";
+};
+let lang = pickLang();
+const t = (k, v = {}) => String(STR[lang][k] ?? STR.es[k]).replace(/\{(\w+)\}/g, (_, x) => v[x] ?? "");
+const chipName = c => c.n.replace("{entry}", t("entry"));
+const EMU_LINK = () => '<a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a>';
+
 // Escala de EmuReady (rank 1–8)
-const RANK = [null,
-  {es:"Perfecto", k:"ok"}, {es:"Genial", k:"good"}, {es:"Jugable", k:"warn"}, {es:"Pobre", k:"bad"},
-  {es:"Entra al juego", k:"no"}, {es:"Solo intro", k:"no"}, {es:"Solo carga", k:"no"}, {es:"No arranca", k:"no"}];
+const RANK_K = [null, "ok", "good", "warn", "bad", "no", "no", "no", "no"];
+const rankName = r => STR[lang].ranks[r - 1];
 
 // ───────── Estado ─────────
 const store = {
@@ -201,7 +410,7 @@ const MAX_CARDS = 120;
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-const fmt = n => n.toLocaleString("es");
+const fmt = n => n.toLocaleString(lang);
 const median = a => { const s = [...a].sort((x,y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
 const sameTier = (cid, me) => { const c = chipById[cid]; return c && c.tier === me.tier && (c.gpu === "adreno") === (me.gpu === "adreno"); };
 
@@ -229,7 +438,7 @@ function bySoc(rows){
   return [...m].map(([s, ps]) => ({soc: ER.socs[s], ps, n: ps.length, med: median(ps)}))
     .sort((a,b) => b.n - a.n || a.med - b.med);
 }
-const scopeText = (s, me) => s === "exact" ? `en ${me.n}` : s === "tier" ? `en chips de tu gama (${me.gpu === "adreno" ? "Adreno" : "sin Adreno"}, ${me.tier}/5)` : "en todos los dispositivos";
+const scopeText = (s, me) => s === "exact" ? t("scopeExact", {chip: chipName(me)}) : s === "tier" ? t("scopeTier", {gpu: me.gpu === "adreno" ? "Adreno" : t("noAdreno"), t: me.tier}) : t("scopeAll");
 function summary(g){
   if (!g._sum || g._sum.chip !== chip.id){
     const sc = scopeOf(g, chip), top = byEmulator(sc.rows)[0];
@@ -243,28 +452,24 @@ function renderChipSelect(){
   const sel = $("#chip"), groups = {};
   CHIPS.forEach(c => (groups[c.g] ||= []).push(c));
   sel.innerHTML = Object.entries(groups).map(([g, cs]) =>
-    `<optgroup label="${esc(g)}">${cs.map(c => `<option value="${c.id}">${esc(c.n)}</option>`).join("")}</optgroup>`).join("");
+    `<optgroup label="${esc(g)}">${cs.map(c => `<option value="${c.id}">${esc(chipName(c))}</option>`).join("")}</optgroup>`).join("");
   sel.value = chip.id;
   sel.onchange = () => { chip = chipById[sel.value]; store.set("dc-chip", chip.id); renderAll(); };
 }
 function renderDevice(){
   $("#tierbar").innerHTML = [1,2,3,4,5].map(i => `<i class="${i <= chip.tier ? "on" : ""}" style="height:${6 + i*2.4}px"></i>`).join("");
-  $("#gpu").textContent = `GPU ${GPU_LABEL[chip.gpu]} · gama ${chip.tier}/5`;
+  $("#gpu").textContent = t("gpuLine", {gpu: GPU_LABEL[chip.gpu], t: chip.tier});
 }
-const FILTERS = [
-  {id:"all",  t:"Todos"},
-  {id:"mine", t:"Reportados en mi chip"},
-  {id:"good", t:"Van bien en mi equipo"},
-];
+const FILTERS = [{id:"all", k:"fAll"}, {id:"mine", k:"fMine"}, {id:"good", k:"fGood"}];
 function renderFilters(){
-  $("#filters").innerHTML = FILTERS.map(f => `<button class="chip" data-f="${f.id}" aria-pressed="${f.id === filter}">${f.t}</button>`).join("");
+  $("#filters").innerHTML = FILTERS.map(f => `<button class="chip" data-f="${f.id}" aria-pressed="${f.id === filter}">${t(f.k)}</button>`).join("");
   $("#filters").querySelectorAll("button").forEach(b => b.onclick = () => { filter = b.dataset.f; renderFilters(); renderGames(); });
 }
 function renderPlatSelect(){
   const counts = {};
   GAMES.forEach(g => counts[g.s] = (counts[g.s] || 0) + 1);
   const sel = $("#plat");
-  sel.innerHTML = `<option value="">Todas las consolas</option>` +
+  sel.innerHTML = `<option value="">${esc(t("allPlat"))}</option>` +
     Object.entries(counts).sort((a,b) => b[1] - a[1]).map(([p, n]) => `<option value="${esc(p)}">${esc(p)} (${fmt(n)})</option>`).join("");
   sel.value = plat;
   sel.onchange = () => { plat = sel.value; renderGames(); };
@@ -283,26 +488,26 @@ function renderGames(){
   });
   const shown = list.slice(0, MAX_CARDS);
   $("#games").innerHTML = shown.map(g => {
-    const s = summary(g), r = RANK[s.med];
-    const sub = s.scope === "exact" ? `${g.s} · ${s.n} en tu chip` : `${g.s} · ${g.r.length} reportes`;
+    const s = summary(g), r = {k: RANK_K[s.med], es: rankName(s.med)};
+    const sub = s.scope === "exact" ? t("cardMine", {s: g.s, n: s.n}) : t("cardAll", {s: g.s, n: g.r.length});
     return `<button class="game" data-id="${g.hid}" aria-current="${current === g.hid}">
       <span class="dot c-${r.k} ${s.scope === "all" ? "dim" : ""}" title="${esc(r.es)} (${esc(scopeText(s.scope, chip))})"></span>
       <span class="t"><span>${esc(g.t)}</span><small>${esc(sub)}</small></span></button>`;
   }).join("");
   $("#empty").hidden = list.length > 0;
   const filtered = q || plat || filter !== "all";
-  $("#count").innerHTML = (list.length > shown.length ? `Mostrando ${fmt(shown.length)} de ${fmt(list.length)}; busca para afinar` : `${fmt(list.length)} de ${fmt(GAMES.length)} juegos`)
-    + (filtered ? ` · <button type="button" id="reset">Quitar filtros</button>` : "");
+  $("#count").innerHTML = esc(list.length > shown.length ? t("countShown", {a: fmt(shown.length), b: fmt(list.length)}) : t("countAll", {a: fmt(list.length), b: fmt(GAMES.length)}))
+    + (filtered ? ` · <button type="button" id="reset">${esc(t("reset"))}</button>` : "");
   if (filtered) $("#reset").onclick = resetFilters;
   $("#games").querySelectorAll(".game").forEach(el => el.onclick = () => { location.hash = el.dataset.id; });
 }
 
 function distBar(ps){
   const c = Array(9).fill(0); ps.forEach(p => c[p]++);
-  return `<span class="dist" aria-hidden="true">${c.map((n, k) => n && k ? `<i class="c-${RANK[k].k}" style="flex:${n}" title="${RANK[k].es}: ${n}"></i>` : "").join("")}</span>`;
+  return `<span class="dist" aria-hidden="true">${c.map((n, k) => n && k ? `<i class="c-${RANK_K[k]}" style="flex:${n}" title="${rankName(k)}: ${n}"></i>` : "").join("")}</span>`;
 }
-const pill = med => `<span class="pill v-${RANK[med].k}">${RANK[med].es}</span>`;
-const legend = () => `<div class="legend">${RANK.slice(1).filter((r, i, a) => a.findIndex(x => x.k === r.k) === i).map((r, i) => `<span><i class="c-${r.k}"></i>${i === 4 ? "Entra al juego o peor" : r.es}</span>`).join("")}</div>`;
+const pill = med => `<span class="pill v-${RANK_K[med]}">${rankName(med)}</span>`;
+const legend = () => `<div class="legend">${RANK_K.slice(1).map((k, i) => ({k, es: rankName(i + 1)})).filter((r, i, a) => a.findIndex(x => x.k === r.k) === i).map((r, i) => `<span><i class="c-${r.k}"></i>${i === 4 ? t("legendWorst") : r.es}</span>`).join("")}</div>`;
 
 function renderPanel(){
   const p = $("#panel");
@@ -312,23 +517,23 @@ function renderPanel(){
   const sc = scopeOf(g, chip), emus = byEmulator(sc.rows), top = emus[0];
   const socs = bySoc(g.r).slice(0, 8);
   p.innerHTML = `
-    <div><div class="meta">${esc(g.s.toUpperCase())} · ${g.r.length} REPORTES EN EMUREADY</div><h2>${esc(g.t)}</h2></div>
+    <div><div class="meta">${esc((g.s + " · " + t("gameMeta", {n: g.r.length})).toLocaleUpperCase(lang))}</div><h2>${esc(g.t)}</h2></div>
     <div class="verdict-top">
-      <div><div class="lbl">Mejor emulador ${esc(scopeText(sc.scope, chip))}</div><strong>${esc(top.emu)}</strong></div>
+      <div><div class="lbl">${esc(t("bestEmu", {scope: scopeText(sc.scope, chip)}))}</div><strong>${esc(top.emu)}</strong></div>
       <span style="margin-left:auto">${pill(top.med)}</span>
     </div>
-    ${sc.scope !== "all" && sc.rows.length < 3 ? `<p class="notice">Solo ${sc.rows.length === 1 ? "hay 1 reporte" : `hay ${sc.rows.length} reportes`} ${esc(scopeText(sc.scope, chip))}: tómalo como orientación y mira también los chips de abajo.</p>` : ""}
-    ${sc.scope === "tier" ? `<p class="notice">Nadie lo ha reportado aún en tu chip exacto; usamos ${sc.rows.length} reportes de chips de tu gama.</p>` : ""}
-    ${sc.scope === "all" ? `<p class="notice">No hay reportes en tu chip ni en tu gama. Se muestran todos los dispositivos; en tu equipo puede ir distinto.</p>` : ""}
-    <div class="block"><h4>Emuladores · ${sc.rows.length} reportes ${esc(scopeText(sc.scope, chip))}</h4>
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>Emulador</th><th class="num">Rep.</th><th>Distribución</th><th>Mediana</th></tr></thead>
+    ${sc.scope !== "all" && sc.rows.length < 3 ? `<p class="notice">${esc(t(sc.rows.length === 1 ? "fewOne" : "fewMany", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</p>` : ""}
+    ${sc.scope === "tier" ? `<p class="notice">${esc(t("tierNotice", {n: sc.rows.length}))}</p>` : ""}
+    ${sc.scope === "all" ? `<p class="notice">${esc(t("allNotice"))}</p>` : ""}
+    <div class="block"><h4>${esc(t("emusHead", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</h4>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thEmu")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th>${t("thMed")}</th></tr></thead>
       <tbody>${emus.map(e => `<tr><td><strong>${esc(e.emu)}</strong></td><td class="num">${e.n}</td><td class="bar">${distBar(e.ps)}</td><td>${pill(e.med)}</td></tr>`).join("")}</tbody></table></div>
     </div>
-    ${socs.length ? `<div class="block"><h4>Chips con más reportes</h4>
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>Chip</th><th class="num">Rep.</th><th>Distribución</th><th>Mediana</th></tr></thead>
+    ${socs.length ? `<div class="block"><h4>${esc(t("socsHead"))}</h4>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thChip")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th>${t("thMed")}</th></tr></thead>
       <tbody>${socs.map(s => `<tr class="${s.soc.c === chip.id ? "mine" : ""}"><td>${esc(s.soc.n)}</td><td class="num">${s.n}</td><td class="bar">${distBar(s.ps)}</td><td>${pill(s.med)}</td></tr>`).join("")}</tbody></table></div>
     </div>` : ""}
-    <p class="meta" style="margin:0">Detalles, ajustes y notas de cada reporte: <a href="https://www.emuready.com/games/${esc(g.id)}" target="_blank" rel="noopener">ver ${esc(g.t)} en EmuReady</a></p>
+    <p class="meta" style="margin:0">${t("moreLink", {link: `<a href="https://www.emuready.com/games/${esc(g.id)}" target="_blank" rel="noopener">${esc(t("seeOn", {g: g.t}))}</a>`})}</p>
     ${legend()}`;
 }
 
@@ -341,18 +546,21 @@ function renderOverview(){
     if (!bySys.has(g.s)) bySys.set(g.s, []);
     bySys.get(g.s).push(...sc.rows);
   }
+  // Solo cuentan emuladores con al menos el 10 % de los reportes de esa consola (mínimo 3),
+  // para que uno con pocos reportes no gane por azar
   const rows = [...bySys].map(([s, rs]) => {
-    const e = byEmulator(rs).filter(x => x.n >= 3).sort((a,b) => a.med - b.med || b.n - a.n)[0];
+    const min = Math.max(3, Math.ceil(rs.length * 0.1));
+    const e = byEmulator(rs).filter(x => x.n >= min).sort((a,b) => a.med - b.med || b.n - a.n)[0];
     return e && {s, e, n: rs.length};
   }).filter(Boolean).sort((a,b) => b.n - a.n);
-  return `<div><div class="meta">SIN JUEGO SELECCIONADO</div><h2>Toca un juego de la lista</h2></div>
-    <p style="margin:0;color:var(--muted)">El punto de color indica la nota del mejor emulador en tu ${esc(chip.n)}. Atenuado: no hay reportes de tu chip ni de tu gama.</p>
+  return `<div><div class="meta">${esc(t("noGameMeta"))}</div><h2>${esc(t("noGameH"))}</h2></div>
+    <p style="margin:0;color:var(--muted)">${esc(t("dotHelp", {chip: chipName(chip)}))}</p>
     ${legend()}
-    <div class="block"><h4>Por consola · tu chip y tu gama</h4>
-    ${rows.length ? `<div class="tblwrap"><table class="tbl"><thead><tr><th>Consola</th><th>Emulador con mejor nota</th><th class="num">Rep.</th><th>Mediana</th></tr></thead>
-      <tbody>${rows.map(r => `<tr><td>${esc(r.s)}</td><td>${esc(r.e.emu)}</td><td class="num">${r.n}</td><td>${pill(r.e.med)}</td></tr>`).join("")}</tbody></table></div>
-      <p class="meta" style="margin:8px 0 0">Mediana de todos los juegos reportados de cada consola; los juegos más exigentes pueden ir peor.</p>`
-      : `<p class="notice">Todavía no hay reportes de chips como el tuyo.</p>`}</div>`;
+    <div class="block"><h4>${esc(t("overviewHead"))}</h4>
+    ${rows.length ? `<div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thSys")}</th><th>${t("thBest")}</th><th class="num">${t("thRep")}</th><th>${t("thMed")}</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.s)}</td><td>${esc(r.e.emu)}</td><td class="num">${r.e.n} / ${r.n}</td><td>${pill(r.e.med)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="meta" style="margin:8px 0 0">${esc(t("overviewNote"))}</p>`
+      : `<p class="notice">${esc(t("overviewNone"))}</p>`}</div>`;
 }
 
 function fromHash(){
@@ -363,6 +571,29 @@ function fromHash(){
 }
 function renderAll(){ renderDevice(); renderGames(); renderPanel(); }
 
+function applyStatic(){
+  document.documentElement.lang = lang;
+  document.title = t("docTitle");
+  $("#brand").innerHTML = t("brand"); $("#tag").textContent = t("tag");
+  $("#deviceLabel").textContent = t("device"); $("#langLabel").textContent = t("langLabel");
+  $("#h1").textContent = t("h1"); $("#lead").textContent = t("lead");
+  $("#q").placeholder = t("search"); $("#platLabel").textContent = t("platLabel");
+  $("#filters").setAttribute("aria-label", t("filtersLabel")); $("#empty").textContent = t("empty");
+  $("#footer1").innerHTML = t("footer1", {link: EMU_LINK()}); $("#footer2").textContent = t("footer2");
+  $("#erinfo").innerHTML = ER ? t("info", {n: fmt(ER.total), g: fmt(GAMES.length), link: EMU_LINK(), d: esc(new Date(ER.updated + "T12:00:00").toLocaleDateString(lang, {day:"numeric", month:"long", year:"numeric"}))}) : esc(t("loading"));
+  if (!ER) $("#panel").innerHTML = '<div><div class="meta">' + esc(t("loadMeta")) + '</div><h2>' + esc(t("loadH")) + '</h2></div>';
+}
+function renderLangSelect(){
+  const sel = $("#lang");
+  sel.innerHTML = LANGS.map(([c, n]) => '<option value="' + c + '">' + n + '</option>').join("");
+  sel.value = lang;
+  sel.onchange = () => {
+    lang = sel.value; try { localStorage.setItem("dc-lang", lang); } catch(e){}
+    applyStatic(); renderChipSelect(); renderDevice(); renderFilters();
+    if (ER){ renderPlatSelect(); renderGames(); renderPanel(); }
+  };
+}
+renderLangSelect(); applyStatic();
 renderChipSelect(); renderDevice(); renderFilters();
 $("#q").addEventListener("input", renderGames);
 window.addEventListener("hashchange", fromHash);
@@ -371,11 +602,11 @@ fetch("emuready.json").then(r => { if (!r.ok) throw new Error(r.status); return 
   ER = d;
   GAMES = d.games.map(g => ({...g, hid: "g-" + g.id.slice(0, 8), _n: norm(g.t)}))
     .sort((a,b) => b.r.length - a.r.length || a.t.localeCompare(b.t, "es"));
-  $("#erinfo").innerHTML = `${fmt(d.total)} reportes sobre ${fmt(GAMES.length)} juegos · datos de <a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a> actualizados el ${esc(d.updated)}`;
+  applyStatic();
   renderPlatSelect(); fromHash();
 }).catch(() => {
-  $("#erinfo").textContent = "No se pudieron cargar los reportes. Recarga la página para intentarlo de nuevo.";
-  $("#panel").innerHTML = `<div><div class="meta">SIN DATOS</div><h2>No se pudieron cargar los reportes</h2></div><p class="notice">Recarga la página. Si sigue fallando, la copia de datos puede estar actualizándose.</p>`;
+  $("#erinfo").textContent = t("errInfo");
+  $("#panel").innerHTML = `<div><div class="meta">${esc(t("errMeta"))}</div><h2>${esc(t("errH"))}</h2></div><p class="notice">${esc(t("errP"))}</p>`;
 });
 </script>
 
