@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Qué emulador va mejor en tu Android según los reportes de la comunidad de EmuReady.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Dónde corre mejor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: barra de "tu equipo" fija arriba; debajo buscador + rejilla de juegos y panel de resultados lado a lado (apilados en móvil). */
+:root{
+  --bg:#EDF0F3; --surface:#FFFFFF; --sunk:#E2E6EB; --ink:#151922; --muted:#5A6272; --line:#CDD3DB;
+  --accent:#D63C72; --accent-soft:#F9DDE7;
+  --ok:#1E8F55; --good:#5C9A1E; --warn:#C28400; --bad:#D5582A; --no:#B3263A;
+  --f-display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11141A; --surface:#1A1E26; --sunk:#232833; --ink:#E6E9EF; --muted:#98A0AF; --line:#2F3542;
+  --accent:#FF6E9C; --accent-soft:#3A1E2A;
+  --ok:#3CC47F; --good:#9BCB4A; --warn:#E8B23A; --bad:#F07A4A; --no:#F0566C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11141A; --surface:#1A1E26; --sunk:#232833; --ink:#E6E9EF; --muted:#98A0AF; --line:#2F3542;
+  --accent:#FF6E9C; --accent-soft:#3A1E2A;
+  --ok:#3CC47F; --good:#9BCB4A; --warn:#E8B23A; --bad:#F07A4A; --no:#F0566C; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+header.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-block:12px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.01em;display:flex;align-items:baseline;gap:8px;margin-right:auto}
+.brand b{color:var(--accent)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.device{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.device label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-family:var(--f-mono)}
+.device select{background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:7px 10px;max-width:min(78vw,340px)}
+.tierbar{display:flex;gap:3px;align-items:flex-end;height:18px}
+.tierbar i{width:5px;background:var(--line);border-radius:1px}
+.tierbar i.on{background:var(--accent)}
+.gpu{font-family:var(--f-mono);font-size:12px;padding:2px 7px;border-radius:4px;background:var(--sunk);color:var(--muted)}
+
+.intro{padding-block:22px 6px;display:grid;gap:6px}
+.intro h1{font-family:var(--f-display);font-weight:600;font-size:clamp(24px,4vw,34px);line-height:1.15;margin:0;text-wrap:balance;max-width:26ch}
+.intro p{margin:0;color:var(--muted);max-width:70ch}
+.intro .src{font-family:var(--f-mono);font-size:12.5px}
+
+main.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:24px;padding-block:16px 48px;align-items:start}
+@media (max-width:860px){main.wrap{grid-template-columns:minmax(0,1fr)}}
+
+.search{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.search input{flex:1 1 220px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.search select{flex:0 1 190px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.count{margin:-4px 0 10px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.count button{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font:inherit;text-decoration:underline}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:6px}
+.game{display:flex;align-items:center;gap:10px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;cursor:pointer;min-width:0}
+.game:hover{border-color:var(--muted)}
+.game[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.game .dot{flex:none;width:10px;height:10px;border-radius:50%}
+.game .dot.dim{opacity:.4}
+.game .t{min-width:0;display:grid}
+.game .t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.game .t small{font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{color:var(--muted);padding:12px 0}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:16px;min-width:0}
+@media (min-width:861px){.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);max-height:calc(100vh - 100px);overflow:auto}}
+.panel h2{font-family:var(--f-display);font-weight:600;font-size:26px;margin:0;line-height:1.15;text-wrap:balance}
+.meta{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.verdict-top{display:flex;gap:12px;align-items:center;background:var(--accent-soft);border-radius:8px;padding:12px 14px}
+.verdict-top strong{font-family:var(--f-display);font-size:18px}
+.verdict-top .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--f-mono);color:var(--muted)}
+.notice{margin:0;font-size:13.5px;color:var(--muted);border-left:3px solid var(--warn);padding:2px 0 2px 10px}
+
+.pill{font-family:var(--f-mono);font-size:12px;font-weight:500;border-radius:999px;padding:3px 9px;white-space:nowrap;color:#fff}
+.v-ok,.c-ok{background:var(--ok)} .v-good,.c-good{background:var(--good)} .v-warn,.c-warn{background:var(--warn)} .v-bad,.c-bad{background:var(--bad)} .v-no,.c-no{background:var(--no)}
+:root:not([data-theme="light"]) .pill{color:#0F1115}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .pill{color:#fff}}
+:root[data-theme="light"] .pill{color:#fff}
+
+.block{border-top:1px solid var(--line);padding-top:14px}
+.block h4{margin:0 0 8px;font-size:13px;font-family:var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tblwrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:4px;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl th:last-child,.tbl td:last-child{text-align:right}
+.tbl .num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tbl tr.mine td{background:var(--accent-soft)}
+.tbl td.bar{width:36%}
+.dist{display:flex;height:10px;border-radius:3px;overflow:hidden;background:var(--sunk);min-width:70px}
+.dist i{display:block;min-width:2px}
+
+.legend{display:flex;gap:8px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+footer{color:var(--muted);font-size:12.5px;padding-block:0 32px}
+footer p{max-width:80ch;margin:0 0 8px}
+footer a{color:inherit}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">¿Dónde <b>corre</b>? <small>android · comunidad</small></div>
+    <div class="device">
+      <label for="chip">Tu equipo</label>
+      <select id="chip"></select>
+      <span class="tierbar" id="tierbar" aria-hidden="true"></span>
+      <span class="gpu" id="gpu"></span>
+    </div>
+  </div>
+</header>
+
+<section class="wrap intro">
+  <h1>¿En qué emulador corre mejor tu juego en Android?</h1>
+  <p>Elige tu chip y busca un juego. Te mostramos las notas que ha dado la comunidad de EmuReady en tu mismo chip o, si no hay, en chips de tu gama.</p>
+  <p class="src" id="erinfo">Cargando reportes de EmuReady…</p>
+</section>
+
+<main class="wrap">
+  <section aria-label="Juegos">
+    <div class="search">
+      <input id="q" type="search" placeholder="Busca un juego… (ej. Mario Odyssey, God of War)" autocomplete="off">
+      <label class="sr" for="plat">Consola original</label>
+      <select id="plat"></select>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="filters" id="filters" role="group" aria-label="Filtrar"></div>
+    <div class="games" id="games"></div>
+    <p class="empty" id="empty" hidden>Ningún juego coincide. Prueba con otro nombre o quita los filtros.</p>
+  </section>
+
+  <aside class="panel" id="panel" aria-live="polite">
+    <div><div class="meta">CARGANDO</div><h2>Preparando los reportes…</h2></div>
+  </aside>
+</main>
+
+<footer class="wrap">
+  <p>Todos los datos provienen de <a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a>, una base de datos comunitaria de compatibilidad. Se usan sin fines comerciales y cada juego enlaza a su ficha original, donde puedes leer los detalles y aportar tu propio reporte.</p>
+  <p>La agrupación de chips por gama es una aproximación de esta app y solo se usa cuando no hay reportes de tu chip exacto. Los emuladores y ports requieren tus propios archivos del juego.</p>
+</footer>
+
+<script>
+// ───────── Equipos ─────────
+// tier 1–5 = potencia aproximada; se usa para agrupar chips parecidos cuando no hay reportes del tuyo
+const CHIPS = [
+  {g:"Snapdragon (Adreno)", id:"sd8e",  n:"Snapdragon 8 Elite / 8 Elite Gen 5", tier:5, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd8g3", n:"Snapdragon 8 Gen 3 / 8s Gen 4", tier:5, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd8g2", n:"Snapdragon 8 Gen 2 / G3x Gen 2 (Odin 2, Thor)", tier:5, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd8g1", n:"8 Gen 1 / 8+ Gen 1 / 8s Gen 3 / 7+ Gen 3", tier:4, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd888", n:"888 / 870 / 7+ Gen 2", tier:4, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd865", n:"865 / 860 / 855 / 845 (Retroid Pocket 5 / Mini)", tier:3, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd7g",  n:"7 Gen 1–3 / 778G / 780G", tier:3, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd7xx", n:"732G / 750G / 765G / 695 / 6 Gen 1 / G1 Gen 2", tier:2, gpu:"adreno"},
+  {g:"Snapdragon (Adreno)", id:"sd6xx", n:"680 / 685 / 4 Gen 1–2", tier:1, gpu:"adreno"},
+  {g:"MediaTek (Mali / Immortalis)", id:"d9k",  n:"Dimensity 9300 / 9400 / 9500", tier:5, gpu:"mali"},
+  {g:"MediaTek (Mali / Immortalis)", id:"d8k",  n:"Dimensity 8100–8500 / 9000 / 9200", tier:4, gpu:"mali"},
+  {g:"MediaTek (Mali / Immortalis)", id:"d1k",  n:"Dimensity 1100 / 1200 / 7300 (Retroid Pocket 4 Pro)", tier:3, gpu:"mali"},
+  {g:"MediaTek (Mali / Immortalis)", id:"g99",  n:"Helio G99 / Dimensity 6080 / 700–900", tier:2, gpu:"mali"},
+  {g:"MediaTek (Mali / Immortalis)", id:"g85",  n:"Helio G85 / Unisoc / RK3566 / H700 (gama de entrada)", tier:1, gpu:"mali"},
+  {g:"Samsung Exynos", id:"ex24", n:"Exynos 2400 / 2500 / 2600 (Xclipse)", tier:4, gpu:"xclipse"},
+  {g:"Samsung Exynos", id:"ex14", n:"Exynos 1280–1580", tier:2, gpu:"mali"},
+  {g:"Google Tensor", id:"tg5", n:"Tensor G5 (PowerVR, Pixel 10)", tier:4, gpu:"powervr"},
+  {g:"Google Tensor", id:"tg2", n:"Tensor G1–G4 (Pixel 6–9)", tier:3, gpu:"mali"},
+];
+const GPU_LABEL = {adreno:"Adreno", mali:"Mali", xclipse:"Xclipse", powervr:"PowerVR"};
+const chipById = Object.fromEntries(CHIPS.map(c => [c.id, c]));
+
+// Escala de EmuReady (rank 1–8)
+const RANK = [null,
+  {es:"Perfecto", k:"ok"}, {es:"Genial", k:"good"}, {es:"Jugable", k:"warn"}, {es:"Pobre", k:"bad"},
+  {es:"Entra al juego", k:"no"}, {es:"Solo intro", k:"no"}, {es:"Solo carga", k:"no"}, {es:"No arranca", k:"no"}];
+
+// ───────── Estado ─────────
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+};
+let chip = chipById[store.get("dc-chip")] || chipById.sd8g2;
+let ER = null, GAMES = [];
+let filter = "all", plat = "", current = null;
+const MAX_CARDS = 120;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const fmt = n => n.toLocaleString("es");
+const median = a => { const s = [...a].sort((x,y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
+const sameTier = (cid, me) => { const c = chipById[cid]; return c && c.tier === me.tier && (c.gpu === "adreno") === (me.gpu === "adreno"); };
+
+// ───────── Datos ─────────
+// Reportes de un juego en el ámbito más cercano a tu chip con datos
+function scopeOf(g, me){
+  const exact = [], tier = [];
+  for (const r of g.r){
+    const c = r[0] >= 0 ? ER.socs[r[0]].c : null;
+    if (c === me.id) exact.push(r); else if (c && sameTier(c, me)) tier.push(r);
+  }
+  if (exact.length) return {rows: exact, scope: "exact"};
+  if (tier.length) return {rows: tier, scope: "tier"};
+  return {rows: g.r, scope: "all"};
+}
+function byEmulator(rows){
+  const m = new Map();
+  for (const r of rows){ if (!m.has(r[1])) m.set(r[1], []); m.get(r[1]).push(r[2]); }
+  return [...m].map(([e, ps]) => ({emu: ER.emus[e], ps, n: ps.length, med: median(ps)}))
+    .sort((a,b) => a.med - b.med || b.n - a.n);
+}
+function bySoc(rows){
+  const m = new Map();
+  for (const r of rows){ if (r[0] < 0) continue; if (!m.has(r[0])) m.set(r[0], []); m.get(r[0]).push(r[2]); }
+  return [...m].map(([s, ps]) => ({soc: ER.socs[s], ps, n: ps.length, med: median(ps)}))
+    .sort((a,b) => b.n - a.n || a.med - b.med);
+}
+const scopeText = (s, me) => s === "exact" ? `en ${me.n}` : s === "tier" ? `en chips de tu gama (${me.gpu === "adreno" ? "Adreno" : "sin Adreno"}, ${me.tier}/5)` : "en todos los dispositivos";
+function summary(g){
+  if (!g._sum || g._sum.chip !== chip.id){
+    const sc = scopeOf(g, chip), top = byEmulator(sc.rows)[0];
+    g._sum = {chip: chip.id, med: top ? top.med : 8, scope: sc.scope, n: sc.rows.length};
+  }
+  return g._sum;
+}
+
+// ───────── Render ─────────
+function renderChipSelect(){
+  const sel = $("#chip"), groups = {};
+  CHIPS.forEach(c => (groups[c.g] ||= []).push(c));
+  sel.innerHTML = Object.entries(groups).map(([g, cs]) =>
+    `<optgroup label="${esc(g)}">${cs.map(c => `<option value="${c.id}">${esc(c.n)}</option>`).join("")}</optgroup>`).join("");
+  sel.value = chip.id;
+  sel.onchange = () => { chip = chipById[sel.value]; store.set("dc-chip", chip.id); renderAll(); };
+}
+function renderDevice(){
+  $("#tierbar").innerHTML = [1,2,3,4,5].map(i => `<i class="${i <= chip.tier ? "on" : ""}" style="height:${6 + i*2.4}px"></i>`).join("");
+  $("#gpu").textContent = `GPU ${GPU_LABEL[chip.gpu]} · gama ${chip.tier}/5`;
+}
+const FILTERS = [
+  {id:"all",  t:"Todos"},
+  {id:"mine", t:"Reportados en mi chip"},
+  {id:"good", t:"Van bien en mi equipo"},
+];
+function renderFilters(){
+  $("#filters").innerHTML = FILTERS.map(f => `<button class="chip" data-f="${f.id}" aria-pressed="${f.id === filter}">${f.t}</button>`).join("");
+  $("#filters").querySelectorAll("button").forEach(b => b.onclick = () => { filter = b.dataset.f; renderFilters(); renderGames(); });
+}
+function renderPlatSelect(){
+  const counts = {};
+  GAMES.forEach(g => counts[g.s] = (counts[g.s] || 0) + 1);
+  const sel = $("#plat");
+  sel.innerHTML = `<option value="">Todas las consolas</option>` +
+    Object.entries(counts).sort((a,b) => b[1] - a[1]).map(([p, n]) => `<option value="${esc(p)}">${esc(p)} (${fmt(n)})</option>`).join("");
+  sel.value = plat;
+  sel.onchange = () => { plat = sel.value; renderGames(); };
+}
+function resetFilters(){ $("#q").value = ""; plat = ""; $("#plat").value = ""; filter = "all"; renderFilters(); renderGames(); }
+
+function renderGames(){
+  if (!ER) return;
+  const q = norm($("#q").value.trim());
+  const list = GAMES.filter(g => {
+    if (q && !g._n.includes(q)) return false;
+    if (plat && g.s !== plat) return false;
+    if (filter === "mine") return summary(g).scope === "exact";
+    if (filter === "good") { const s = summary(g); return s.scope !== "all" && s.med <= 2; }
+    return true;
+  });
+  const shown = list.slice(0, MAX_CARDS);
+  $("#games").innerHTML = shown.map(g => {
+    const s = summary(g), r = RANK[s.med];
+    const sub = s.scope === "exact" ? `${g.s} · ${s.n} en tu chip` : `${g.s} · ${g.r.length} reportes`;
+    return `<button class="game" data-id="${g.hid}" aria-current="${current === g.hid}">
+      <span class="dot c-${r.k} ${s.scope === "all" ? "dim" : ""}" title="${esc(r.es)} (${esc(scopeText(s.scope, chip))})"></span>
+      <span class="t"><span>${esc(g.t)}</span><small>${esc(sub)}</small></span></button>`;
+  }).join("");
+  $("#empty").hidden = list.length > 0;
+  const filtered = q || plat || filter !== "all";
+  $("#count").innerHTML = (list.length > shown.length ? `Mostrando ${fmt(shown.length)} de ${fmt(list.length)}; busca para afinar` : `${fmt(list.length)} de ${fmt(GAMES.length)} juegos`)
+    + (filtered ? ` · <button type="button" id="reset">Quitar filtros</button>` : "");
+  if (filtered) $("#reset").onclick = resetFilters;
+  $("#games").querySelectorAll(".game").forEach(el => el.onclick = () => { location.hash = el.dataset.id; });
+}
+
+function distBar(ps){
+  const c = Array(9).fill(0); ps.forEach(p => c[p]++);
+  return `<span class="dist" aria-hidden="true">${c.map((n, k) => n && k ? `<i class="c-${RANK[k].k}" style="flex:${n}" title="${RANK[k].es}: ${n}"></i>` : "").join("")}</span>`;
+}
+const pill = med => `<span class="pill v-${RANK[med].k}">${RANK[med].es}</span>`;
+const legend = () => `<div class="legend">${RANK.slice(1).filter((r, i, a) => a.findIndex(x => x.k === r.k) === i).map((r, i) => `<span><i class="c-${r.k}"></i>${i === 4 ? "Entra al juego o peor" : r.es}</span>`).join("")}</div>`;
+
+function renderPanel(){
+  const p = $("#panel");
+  if (!ER) return;
+  const g = GAMES.find(x => x.hid === current);
+  if (!g){ p.innerHTML = renderOverview(); return; }
+  const sc = scopeOf(g, chip), emus = byEmulator(sc.rows), top = emus[0];
+  const socs = bySoc(g.r).slice(0, 8);
+  p.innerHTML = `
+    <div><div class="meta">${esc(g.s.toUpperCase())} · ${g.r.length} REPORTES EN EMUREADY</div><h2>${esc(g.t)}</h2></div>
+    <div class="verdict-top">
+      <div><div class="lbl">Mejor emulador ${esc(scopeText(sc.scope, chip))}</div><strong>${esc(top.emu)}</strong></div>
+      <span style="margin-left:auto">${pill(top.med)}</span>
+    </div>
+    ${sc.scope !== "all" && sc.rows.length < 3 ? `<p class="notice">Solo ${sc.rows.length === 1 ? "hay 1 reporte" : `hay ${sc.rows.length} reportes`} ${esc(scopeText(sc.scope, chip))}: tómalo como orientación y mira también los chips de abajo.</p>` : ""}
+    ${sc.scope === "tier" ? `<p class="notice">Nadie lo ha reportado aún en tu chip exacto; usamos ${sc.rows.length} reportes de chips de tu gama.</p>` : ""}
+    ${sc.scope === "all" ? `<p class="notice">No hay reportes en tu chip ni en tu gama. Se muestran todos los dispositivos; en tu equipo puede ir distinto.</p>` : ""}
+    <div class="block"><h4>Emuladores · ${sc.rows.length} reportes ${esc(scopeText(sc.scope, chip))}</h4>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>Emulador</th><th class="num">Rep.</th><th>Distribución</th><th>Mediana</th></tr></thead>
+      <tbody>${emus.map(e => `<tr><td><strong>${esc(e.emu)}</strong></td><td class="num">${e.n}</td><td class="bar">${distBar(e.ps)}</td><td>${pill(e.med)}</td></tr>`).join("")}</tbody></table></div>
+    </div>
+    ${socs.length ? `<div class="block"><h4>Chips con más reportes</h4>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>Chip</th><th class="num">Rep.</th><th>Distribución</th><th>Mediana</th></tr></thead>
+      <tbody>${socs.map(s => `<tr class="${s.soc.c === chip.id ? "mine" : ""}"><td>${esc(s.soc.n)}</td><td class="num">${s.n}</td><td class="bar">${distBar(s.ps)}</td><td>${pill(s.med)}</td></tr>`).join("")}</tbody></table></div>
+    </div>` : ""}
+    <p class="meta" style="margin:0">Detalles, ajustes y notas de cada reporte: <a href="https://www.emuready.com/games/${esc(g.id)}" target="_blank" rel="noopener">ver ${esc(g.t)} en EmuReady</a></p>
+    ${legend()}`;
+}
+
+// Sin juego: mejor emulador por consola según todos los reportes de tu chip o gama
+function renderOverview(){
+  const bySys = new Map();
+  for (const g of GAMES){
+    const sc = scopeOf(g, chip);
+    if (sc.scope === "all") continue;
+    if (!bySys.has(g.s)) bySys.set(g.s, []);
+    bySys.get(g.s).push(...sc.rows);
+  }
+  const rows = [...bySys].map(([s, rs]) => {
+    const e = byEmulator(rs).filter(x => x.n >= 3).sort((a,b) => a.med - b.med || b.n - a.n)[0];
+    return e && {s, e, n: rs.length};
+  }).filter(Boolean).sort((a,b) => b.n - a.n);
+  return `<div><div class="meta">SIN JUEGO SELECCIONADO</div><h2>Toca un juego de la lista</h2></div>
+    <p style="margin:0;color:var(--muted)">El punto de color indica la nota del mejor emulador en tu ${esc(chip.n)}. Atenuado: no hay reportes de tu chip ni de tu gama.</p>
+    ${legend()}
+    <div class="block"><h4>Por consola · tu chip y tu gama</h4>
+    ${rows.length ? `<div class="tblwrap"><table class="tbl"><thead><tr><th>Consola</th><th>Emulador con mejor nota</th><th class="num">Rep.</th><th>Mediana</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.s)}</td><td>${esc(r.e.emu)}</td><td class="num">${r.n}</td><td>${pill(r.e.med)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="meta" style="margin:8px 0 0">Mediana de todos los juegos reportados de cada consola; los juegos más exigentes pueden ir peor.</p>`
+      : `<p class="notice">Todavía no hay reportes de chips como el tuyo.</p>`}</div>`;
+}
+
+function fromHash(){
+  const h = location.hash.slice(1);
+  current = GAMES.some(g => g.hid === h) ? h : null;
+  renderGames(); renderPanel();
+  if (current && window.innerWidth <= 860) $("#panel").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+}
+function renderAll(){ renderDevice(); renderGames(); renderPanel(); }
+
+renderChipSelect(); renderDevice(); renderFilters();
+$("#q").addEventListener("input", renderGames);
+window.addEventListener("hashchange", fromHash);
+
+fetch("emuready.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
+  ER = d;
+  GAMES = d.games.map(g => ({...g, hid: "g-" + g.id.slice(0, 8), _n: norm(g.t)}))
+    .sort((a,b) => b.r.length - a.r.length || a.t.localeCompare(b.t, "es"));
+  $("#erinfo").innerHTML = `${fmt(d.total)} reportes sobre ${fmt(GAMES.length)} juegos · datos de <a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a> actualizados el ${esc(d.updated)}`;
+  renderPlatSelect(); fromHash();
+}).catch(() => {
+  $("#erinfo").textContent = "No se pudieron cargar los reportes. Recarga la página para intentarlo de nuevo.";
+  $("#panel").innerHTML = `<div><div class="meta">SIN DATOS</div><h2>No se pudieron cargar los reportes</h2></div><p class="notice">Recarga la página. Si sigue fallando, la copia de datos puede estar actualizándose.</p>`;
+});
+</script>
+
+</body>
+</html>
