@@ -83,6 +83,8 @@ header.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;pa
 .device select,.lang select{background:var(--sunk);border:1px solid var(--glass-edge);border-radius:999px;padding:7px 14px;max-width:min(78vw,340px);transition:border-color .2s,box-shadow .2s}
 .device select:hover,.lang select:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .lang select{font-size:13px;padding:6px 12px}
+.device .devsel{max-width:min(78vw,260px)}
+.detected{font-family:var(--f-mono);font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);animation:pop .5s var(--ease) both}
 .tierbar{display:flex;gap:3px;align-items:flex-end;height:18px}
 .tierbar i{width:5px;background:var(--line);border-radius:2px;transition:background .3s,box-shadow .3s}
 .tierbar i.on{background:linear-gradient(var(--accent),var(--accent-2));box-shadow:0 0 8px var(--accent-soft)}
@@ -124,6 +126,18 @@ main.wrap > .panel{animation-delay:.3s}
 .game:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 var(--sheen),0 16px 30px -14px var(--glass-shade)}
 .game:active{transform:translateY(-1px) scale(.985)}
 .game[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 1px 0 var(--sheen),0 0 0 3px var(--accent-soft),0 16px 30px -14px var(--accent)}
+.cv{position:relative;flex:none;width:34px;height:46px;border-radius:7px;overflow:hidden;background:linear-gradient(135deg,var(--accent-soft),var(--sunk));
+  display:grid;place-items:center;font-family:var(--f-mono);font-size:9px;color:var(--muted);box-shadow:0 4px 10px -6px var(--glass-shade)}
+.cv img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s var(--ease)}
+.game:hover .cv img{transform:scale(1.08)}
+.cv .dot{position:absolute;right:3px;bottom:3px;width:9px;height:9px;border:1.5px solid var(--glass-strong)}
+.hero{display:flex;gap:16px;align-items:flex-end}
+.hero .cover{flex:none;width:92px;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--sunk);box-shadow:0 14px 30px -12px var(--glass-shade);animation:pop .5s var(--ease) both}
+.hero .cover img{width:100%;height:100%;object-fit:cover;display:block}
+.hero > div:last-child{min-width:0}
+.panel .backdrop{position:absolute;inset:0 0 auto;height:220px;background-size:cover;background-position:center;filter:blur(40px) saturate(160%);opacity:.35;pointer-events:none;border-radius:inherit;
+  -webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent);z-index:-1}
+.panel{isolation:isolate}
 .game .dot{flex:none;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 3px var(--sunk)}
 .game .dot.c-ok{box-shadow:0 0 10px var(--ok)}
 .game .dot.dim{opacity:.4;box-shadow:none}
@@ -131,6 +145,15 @@ main.wrap > .panel{animation-delay:.3s}
 .game .t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 .game .t small{font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .empty{color:var(--muted);padding:12px 0}
+.pager{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:16px}
+.pager button{min-width:38px;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--glass-edge);cursor:pointer;
+  background:linear-gradient(140deg,var(--sheen),transparent 50%),var(--glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;transition:transform .2s var(--ease),box-shadow .25s,background .25s}
+.pager button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 18px -10px var(--glass-shade)}
+.pager button:disabled{opacity:.4;cursor:default}
+.pager button[aria-current="page"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent;box-shadow:0 8px 20px -8px var(--accent)}
+.pager .gap{color:var(--muted);padding:0 2px}
+.pager .info{width:100%;text-align:center;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 
 .panel{position:relative;border-radius:24px;padding:22px;display:grid;gap:16px;min-width:0}
 @media (min-width:861px){.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);max-height:calc(100vh - 104px);overflow:auto}}
@@ -207,6 +230,9 @@ footer a{color:inherit}
       <select id="chip"></select>
       <span class="tierbar" id="tierbar" aria-hidden="true"></span>
       <span class="gpu" id="gpu"></span>
+      <label class="sr" for="dev" id="devLabel">Dispositivo</label>
+      <select id="dev" class="devsel" hidden></select>
+      <span class="detected" id="detected" hidden></span>
     </div>
     <div class="lang"><label class="sr" for="lang" id="langLabel">Idioma</label><select id="lang"></select></div>
   </div>
@@ -228,6 +254,7 @@ footer a{color:inherit}
     <p class="count" id="count"></p>
     <div class="filters" id="filters" role="group" aria-label="Filtrar"></div>
     <div class="games" id="games"></div>
+    <nav class="pager" id="pager" hidden></nav>
     <p class="empty" id="empty" hidden>Ningún juego coincide. Prueba con otro nombre o quita los filtros.</p>
   </section>
 
@@ -463,6 +490,8 @@ it:{
 },
 };
 for (const [l, o] of Object.entries({"es":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Configuración recomendada · {emu}","cfgBasisGood":"Valor más usado en {n} reportes con nota Perfecto o Genial {scope}.","cfgBasisAny":"Valor más usado en {n} reportes {scope}; ninguno tiene nota Perfecto o Genial.","cfgNone":"Todavía no hay configuraciones de {emu} para este juego. Se van añadiendo cada día.","thSetting":"Ajuste","thValue":"Valor","thShare":"Uso","on":"Sí","off":"No","cfgEnglish":"Los nombres de los ajustes se muestran como en EmuReady (en inglés).","progress":"FPS y configuraciones disponibles en el {p} % de los reportes; el resto se añade poco a poco cada día.","cfgLoading":"Cargando configuraciones…","emuPick":"Ver configuración de"},"en":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Recommended settings · {emu}","cfgBasisGood":"Most common value in {n} reports rated Perfect or Great {scope}.","cfgBasisAny":"Most common value in {n} reports {scope}; none is rated Perfect or Great.","cfgNone":"No {emu} settings for this game yet. More are added every day.","thSetting":"Setting","thValue":"Value","thShare":"Share","on":"Yes","off":"No","cfgEnglish":"Setting names are shown as on EmuReady (in English).","progress":"FPS and settings available for {p}% of reports; the rest is added gradually every day.","cfgLoading":"Loading settings…","emuPick":"Show settings for"},"pt":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Configuração recomendada · {emu}","cfgBasisGood":"Valor mais usado em {n} relatos com nota Perfeito ou Ótimo {scope}.","cfgBasisAny":"Valor mais usado em {n} relatos {scope}; nenhum tem nota Perfeito ou Ótimo.","cfgNone":"Ainda não há configurações do {emu} para este jogo. Novas são adicionadas todo dia.","thSetting":"Ajuste","thValue":"Valor","thShare":"Uso","on":"Sim","off":"Não","cfgEnglish":"Os nomes dos ajustes aparecem como no EmuReady (em inglês).","progress":"FPS e configurações disponíveis em {p}% dos relatos; o resto é adicionado aos poucos todo dia.","cfgLoading":"Carregando configurações…","emuPick":"Ver configuração de"},"fr":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Réglages recommandés · {emu}","cfgBasisGood":"Valeur la plus fréquente dans {n} rapports notés Parfait ou Excellent {scope}.","cfgBasisAny":"Valeur la plus fréquente dans {n} rapports {scope} ; aucun n'est noté Parfait ou Excellent.","cfgNone":"Pas encore de réglages {emu} pour ce jeu. D'autres sont ajoutés chaque jour.","thSetting":"Réglage","thValue":"Valeur","thShare":"Part","on":"Oui","off":"Non","cfgEnglish":"Les noms des réglages sont affichés comme sur EmuReady (en anglais).","progress":"FPS et réglages disponibles pour {p} % des rapports ; le reste est ajouté progressivement chaque jour.","cfgLoading":"Chargement des réglages…","emuPick":"Voir les réglages de"},"de":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Empfohlene Einstellungen · {emu}","cfgBasisGood":"Häufigster Wert in {n} Berichten mit Perfekt oder Sehr gut {scope}.","cfgBasisAny":"Häufigster Wert in {n} Berichten {scope}; keiner ist mit Perfekt oder Sehr gut bewertet.","cfgNone":"Noch keine {emu}-Einstellungen für dieses Spiel. Täglich kommen neue hinzu.","thSetting":"Einstellung","thValue":"Wert","thShare":"Anteil","on":"Ja","off":"Nein","cfgEnglish":"Die Namen der Einstellungen werden wie auf EmuReady angezeigt (auf Englisch).","progress":"FPS und Einstellungen für {p} % der Berichte verfügbar; der Rest kommt täglich nach und nach hinzu.","cfgLoading":"Einstellungen werden geladen…","emuPick":"Einstellungen anzeigen für"},"it":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Impostazioni consigliate · {emu}","cfgBasisGood":"Valore più usato in {n} report con voto Perfetto o Ottimo {scope}.","cfgBasisAny":"Valore più usato in {n} report {scope}; nessuno ha voto Perfetto o Ottimo.","cfgNone":"Non ci sono ancora impostazioni di {emu} per questo gioco. Se ne aggiungono ogni giorno.","thSetting":"Impostazione","thValue":"Valore","thShare":"Uso","on":"Sì","off":"No","cfgEnglish":"I nomi delle impostazioni sono mostrati come su EmuReady (in inglese).","progress":"FPS e impostazioni disponibili per il {p}% dei report; il resto si aggiunge poco a poco ogni giorno.","cfgLoading":"Caricamento impostazioni…","emuPick":"Mostra impostazioni di"}})) Object.assign(STR[l], o);
+for (const [l, o] of Object.entries({"es":{"devLabel":"Dispositivo","anyDev":"Cualquier dispositivo con este chip","scopeDev":"en {dev}","detected":"Detectado: {gpu}","cardDev":"{s} · {n} en tu dispositivo","devFallback":"Nadie lo ha reportado aún en tu {dev}; se usan los reportes de chips como el tuyo."},"en":{"devLabel":"Device","anyDev":"Any device with this chip","scopeDev":"on {dev}","detected":"Detected: {gpu}","cardDev":"{s} · {n} on your device","devFallback":"No one has reported it on your {dev} yet; reports from chips like yours are used."},"pt":{"devLabel":"Aparelho","anyDev":"Qualquer aparelho com este chip","scopeDev":"no {dev}","detected":"Detectado: {gpu}","cardDev":"{s} · {n} no seu aparelho","devFallback":"Ninguém relatou ainda no seu {dev}; são usados relatos de chips como o seu."},"fr":{"devLabel":"Appareil","anyDev":"Tout appareil avec cette puce","scopeDev":"sur {dev}","detected":"Détecté : {gpu}","cardDev":"{s} · {n} sur votre appareil","devFallback":"Personne ne l'a encore signalé sur votre {dev} ; les rapports de puces comme la vôtre sont utilisés."},"de":{"devLabel":"Gerät","anyDev":"Jedes Gerät mit diesem Chip","scopeDev":"auf {dev}","detected":"Erkannt: {gpu}","cardDev":"{s} · {n} auf deinem Gerät","devFallback":"Noch niemand hat es auf deinem {dev} gemeldet; es werden Berichte von Chips wie deinem genutzt."},"it":{"devLabel":"Dispositivo","anyDev":"Qualsiasi dispositivo con questo chip","scopeDev":"su {dev}","detected":"Rilevato: {gpu}","cardDev":"{s} · {n} sul tuo dispositivo","devFallback":"Nessuno l'ha ancora segnalato sul tuo {dev}; si usano i report di chip come il tuo."}})) Object.assign(STR[l], o);
+for (const [l, o] of Object.entries({"es":{"prev":"Anterior","next":"Siguiente","pageOf":"Página {a} de {b}","countPaged":"{a}–{b} de {n} juegos","pagesLabel":"Páginas"},"en":{"prev":"Previous","next":"Next","pageOf":"Page {a} of {b}","countPaged":"{a}–{b} of {n} games","pagesLabel":"Pages"},"pt":{"prev":"Anterior","next":"Próxima","pageOf":"Página {a} de {b}","countPaged":"{a}–{b} de {n} jogos","pagesLabel":"Páginas"},"fr":{"prev":"Précédent","next":"Suivant","pageOf":"Page {a} sur {b}","countPaged":"{a}–{b} sur {n} jeux","pagesLabel":"Pages"},"de":{"prev":"Zurück","next":"Weiter","pageOf":"Seite {a} von {b}","countPaged":"{a}–{b} von {n} Spielen","pagesLabel":"Seiten"},"it":{"prev":"Precedente","next":"Successiva","pageOf":"Pagina {a} di {b}","countPaged":"{a}–{b} di {n} giochi","pagesLabel":"Pagine"}})) Object.assign(STR[l], o);
 const LANGS = [["es","Español"],["en","English"],["pt","Português"],["fr","Français"],["de","Deutsch"],["it","Italiano"]];
 
 const pickLang = () => {
@@ -485,10 +514,20 @@ const store = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
   set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
 };
-let chip = chipById[store.get("dc-chip")] || chipById.sd8g2;
+const savedChip = store.get("dc-chip");
+let chip = chipById[savedChip] || chipById.sd8g2;
+let dev = -1;
+// T: = thegamesdb, I: = igdb (ver tools/build.mjs)
+const imgUrl = (c, big) => !c ? null
+  : c.startsWith("T:") ? "https://cdn.thegamesdb.net/images/" + (big ? "medium" : "thumb") + "/" + c.slice(2)
+  : c.startsWith("R:") ? "https://media.rawg.io/media/resize/" + (big ? "640" : "200") + "/-/" + c.slice(2)
+  : c.startsWith("I:") ? "https://images.igdb.com/igdb/image/upload/" + (big ? "t_cover_big" : "t_cover_small") + "/" + c.slice(2)
+  : c;
+const initials = s => esc(s.replace(/[^A-Za-z0-9 ]/g, "").split(" ").filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase());
 let ER = null, GAMES = [];
 let filter = "all", plat = "", current = null;
-const MAX_CARDS = 120;
+const PAGE_SIZE = 48;
+let page = 1;
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -500,6 +539,7 @@ const sameTier = (cid, me) => { const c = chipById[cid]; return c && c.tier === 
 // ───────── Datos ─────────
 // Reportes de un juego en el ámbito más cercano a tu chip con datos
 function scopeOf(g, me){
+  if (dev >= 0){ const dr = g.r.filter(r => r[3] === dev); if (dr.length) return {rows: dr, scope: "dev"}; }
   const exact = [], tier = [];
   for (const r of g.r){
     const c = r[0] >= 0 ? ER.socs[r[0]].c : null;
@@ -509,8 +549,8 @@ function scopeOf(g, me){
   if (tier.length) return {rows: tier, scope: "tier"};
   return {rows: g.r, scope: "all"};
 }
-const fpsOf = r => r.length > 3 && r[3] >= 0 ? r[3] : null;
-const cfgIdOf = r => r.length > 4 && r[4] >= 0 ? r[4] : null;
+const fpsOf = r => r.length > 4 && r[4] >= 0 ? r[4] : null;
+const cfgIdOf = r => r.length > 5 && r[5] >= 0 ? r[5] : null;
 function byEmulator(rows){
   const m = new Map();
   for (const r of rows){ if (!m.has(r[1])) m.set(r[1], []); m.get(r[1]).push(r); }
@@ -524,23 +564,51 @@ function bySoc(rows){
   return [...m].map(([s, ps]) => ({soc: ER.socs[s], ps, n: ps.length, med: median(ps)}))
     .sort((a,b) => b.n - a.n || a.med - b.med);
 }
-const scopeText = (s, me) => s === "exact" ? t("scopeExact", {chip: chipName(me)}) : s === "tier" ? t("scopeTier", {gpu: me.gpu === "adreno" ? "Adreno" : t("noAdreno"), t: me.tier}) : t("scopeAll");
+const devName = () => dev >= 0 ? ER.devs[dev].n : "";
+const scopeText = (s, me) => s === "dev" ? t("scopeDev", {dev: devName()}) : s === "exact" ? t("scopeExact", {chip: chipName(me)}) : s === "tier" ? t("scopeTier", {gpu: me.gpu === "adreno" ? "Adreno" : t("noAdreno"), t: me.tier}) : t("scopeAll");
 function summary(g){
-  if (!g._sum || g._sum.chip !== chip.id){
+  if (!g._sum || g._sum.chip !== chip.id || g._sum.dev !== dev){
     const sc = scopeOf(g, chip), top = byEmulator(sc.rows)[0];
-    g._sum = {chip: chip.id, med: top ? top.med : 8, scope: sc.scope, n: sc.rows.length};
+    g._sum = {chip: chip.id, dev, med: top ? top.med : 8, scope: sc.scope, n: sc.rows.length};
   }
   return g._sum;
 }
 
 // ───────── Render ─────────
+function setDev(i, fromUser){
+  dev = i;
+  if (dev >= 0){
+    const c = ER.socs[ER.devs[dev].s]?.c;
+    if (c && chipById[c]){ chip = chipById[c]; store.set("dc-chip", chip.id); $("#chip").value = chip.id; }
+  }
+  if (fromUser) store.set("dc-dev", dev >= 0 ? ER.devs[dev].n : "");
+}
+function renderDevSelect(){
+  const sel = $("#dev");
+  if (!ER){ sel.hidden = true; return; }
+  sel.hidden = false;
+  const counts = new Map();
+  for (const g of ER.games) for (const r of g.r) if (r[3] >= 0) counts.set(r[3], (counts.get(r[3]) || 0) + 1);
+  const list = [...counts].filter(([, n]) => n >= 3).map(([i]) => i).sort((a, b) => ER.devs[a].n.localeCompare(ER.devs[b].n));
+  const groups = {};
+  for (const i of list){ const b = ER.devs[i].n.split(" ")[0]; (groups[b] ||= []).push(i); }
+  sel.innerHTML = `<option value="-1">${esc(t("anyDev"))}</option>` + Object.entries(groups).map(([b, is]) =>
+    `<optgroup label="${esc(b)}">${is.map(i => `<option value="${i}">${esc(ER.devs[i].n)} (${counts.get(i)})</option>`).join("")}</optgroup>`).join("");
+  sel.value = String(dev);
+  sel.onchange = () => { setDev(Number(sel.value), true); renderAll(); };
+}
 function renderChipSelect(){
   const sel = $("#chip"), groups = {};
   CHIPS.forEach(c => (groups[c.g] ||= []).push(c));
   sel.innerHTML = Object.entries(groups).map(([g, cs]) =>
     `<optgroup label="${esc(g)}">${cs.map(c => `<option value="${c.id}">${esc(chipName(c))}</option>`).join("")}</optgroup>`).join("");
   sel.value = chip.id;
-  sel.onchange = () => { chip = chipById[sel.value]; store.set("dc-chip", chip.id); renderAll(); };
+  sel.onchange = () => {
+    chip = chipById[sel.value]; store.set("dc-chip", chip.id);
+    if (dev >= 0 && ER.socs[ER.devs[dev].s]?.c !== chip.id){ dev = -1; store.set("dc-dev", ""); $("#dev").value = "-1"; }
+    $("#detected").hidden = true;
+    renderAll();
+  };
 }
 function renderDevice(){
   $("#tierbar").innerHTML = [1,2,3,4,5].map(i => `<i class="${i <= chip.tier ? "on" : ""}" style="height:${6 + i*2.4}px"></i>`).join("");
@@ -568,27 +636,55 @@ function renderGames(){
   const list = GAMES.filter(g => {
     if (q && !g._n.includes(q)) return false;
     if (plat && g.s !== plat) return false;
-    if (filter === "mine") return summary(g).scope === "exact";
+    if (filter === "mine") return ["exact", "dev"].includes(summary(g).scope);
     if (filter === "good") { const s = summary(g); return s.scope !== "all" && s.med <= 2; }
     return true;
   });
-  const shown = list.slice(0, MAX_CARDS);
-  const sig = [q, plat, filter, chip.id, lang, shown.length].join("|");
+  // Al cambiar búsqueda o filtros se vuelve a la página 1
+  const fsig = [q, plat, filter, chip.id, dev].join("|");
+  if (fsig !== renderGames.fsig){ page = 1; renderGames.fsig = fsig; }
+  const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  page = Math.min(page, pages);
+  const from = (page - 1) * PAGE_SIZE, shown = list.slice(from, from + PAGE_SIZE);
+  const sig = [fsig, lang, page].join("|");
   $("#games").classList.toggle("still", sig === renderGames.sig);
   renderGames.sig = sig;
   $("#games").innerHTML = shown.map((g, i) => {
     const s = summary(g), r = {k: RANK_K[s.med], es: rankName(s.med)};
-    const sub = s.scope === "exact" ? t("cardMine", {s: g.s, n: s.n}) : t("cardAll", {s: g.s, n: g.r.length});
+    const sub = s.scope === "dev" ? t("cardDev", {s: g.s, n: s.n}) : s.scope === "exact" ? t("cardMine", {s: g.s, n: s.n}) : t("cardAll", {s: g.s, n: g.r.length});
     return `<button class="game" style="--i:${Math.min(i, 30)}" data-id="${g.hid}" aria-current="${current === g.hid}">
-      <span class="dot c-${r.k} ${s.scope === "all" ? "dim" : ""}" title="${esc(r.es)} (${esc(scopeText(s.scope, chip))})"></span>
+      <span class="cv">${g.img ? `<img src="${esc(imgUrl(g.img))}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : initials(g.t)}<span class="dot c-${r.k} ${s.scope === "all" ? "dim" : ""}" title="${esc(r.es)} (${esc(scopeText(s.scope, chip))})"></span></span>
       <span class="t"><span>${esc(g.t)}</span><small>${esc(sub)}</small></span></button>`;
   }).join("");
   $("#empty").hidden = list.length > 0;
   const filtered = q || plat || filter !== "all";
-  $("#count").innerHTML = esc(list.length > shown.length ? t("countShown", {a: fmt(shown.length), b: fmt(list.length)}) : t("countAll", {a: fmt(list.length), b: fmt(GAMES.length)}))
+  $("#count").innerHTML = esc(pages > 1 ? t("countPaged", {a: fmt(from + 1), b: fmt(from + shown.length), n: fmt(list.length)}) : t("countAll", {a: fmt(list.length), b: fmt(GAMES.length)}))
     + (filtered ? ` · <button type="button" id="reset">${esc(t("reset"))}</button>` : "");
   if (filtered) $("#reset").onclick = resetFilters;
   $("#games").querySelectorAll(".game").forEach(el => el.onclick = () => { location.hash = el.dataset.id; });
+  renderPager(pages);
+}
+// Botones: anterior, primera, vecinas de la actual, última, siguiente (con … en los huecos)
+function renderPager(pages){
+  const nav = $("#pager");
+  nav.hidden = pages <= 1;
+  if (pages <= 1){ nav.innerHTML = ""; return; }
+  nav.setAttribute("aria-label", t("pagesLabel"));
+  const nums = [...new Set([1, page - 2, page - 1, page, page + 1, page + 2, pages])].filter(n => n >= 1 && n <= pages).sort((a, b) => a - b);
+  let html = `<button type="button" data-p="${page - 1}" ${page === 1 ? "disabled" : ""} aria-label="${esc(t("prev"))}">‹</button>`, last = 0;
+  for (const n of nums){
+    if (n - last > 1) html += `<span class="gap">…</span>`;
+    html += `<button type="button" data-p="${n}" ${n === page ? 'aria-current="page"' : ""}>${n}</button>`;
+    last = n;
+  }
+  html += `<button type="button" data-p="${page + 1}" ${page === pages ? "disabled" : ""} aria-label="${esc(t("next"))}">›</button>`;
+  html += `<span class="info">${esc(t("pageOf", {a: page, b: pages}))}</span>`;
+  nav.innerHTML = html;
+  nav.querySelectorAll("button[data-p]").forEach(b => b.onclick = () => {
+    page = Number(b.dataset.p); renderGames();
+    const top = $("#q").getBoundingClientRect().top + scrollY - 90;
+    if (scrollY > top) scrollTo({top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  });
 }
 
 function distBar(ps){
@@ -645,12 +741,15 @@ function renderPanel(){
   const sc = scopeOf(g, chip), emus = byEmulator(sc.rows), top = emus[0];
   const socs = bySoc(g.r).slice(0, 8);
   p.innerHTML = `
-    <div><div class="meta">${esc((g.s + " · " + t("gameMeta", {n: g.r.length})).toLocaleUpperCase(lang))}</div><h2>${esc(g.t)}</h2></div>
+    ${g.img ? `<div class="backdrop" style="background-image:url('${esc(imgUrl(g.img, true))}')"></div>` : ""}
+    <div class="hero">${g.img ? `<div class="cover"><img src="${esc(imgUrl(g.img, true))}" alt="" onerror="this.parentNode.remove()"></div>` : ""}
+      <div><div class="meta">${esc((g.s + " · " + t("gameMeta", {n: g.r.length})).toLocaleUpperCase(lang))}</div><h2>${esc(g.t)}</h2></div></div>
     <div class="verdict-top">
       <div><div class="lbl">${esc(t("bestEmu", {scope: scopeText(sc.scope, chip)}))}</div><strong>${esc(top.emu)}</strong>${top.fps !== null ? fpsText(top.fps, top.nfps) : ""}</div>
       <span style="margin-left:auto">${pill(top.med)}</span>
     </div>
     ${sc.scope !== "all" && sc.rows.length < 3 ? `<p class="notice">${esc(t(sc.rows.length === 1 ? "fewOne" : "fewMany", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</p>` : ""}
+    ${dev >= 0 && sc.scope !== "dev" ? `<p class="notice">${esc(t("devFallback", {dev: devName()}))}</p>` : ""}
     ${sc.scope === "tier" ? `<p class="notice">${esc(t("tierNotice", {n: sc.rows.length}))}</p>` : ""}
     ${sc.scope === "all" ? `<p class="notice">${esc(t("allNotice"))}</p>` : ""}
     <div class="block"><h4>${esc(t("emusHead", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</h4>
@@ -707,7 +806,7 @@ function applyStatic(){
   document.documentElement.lang = lang;
   document.title = t("docTitle");
   $("#brand").innerHTML = t("brand"); $("#tag").textContent = t("tag");
-  $("#deviceLabel").textContent = t("device"); $("#langLabel").textContent = t("langLabel");
+  $("#deviceLabel").textContent = t("device"); $("#devLabel").textContent = t("devLabel"); $("#langLabel").textContent = t("langLabel");
   $("#h1").textContent = t("h1"); $("#lead").textContent = t("lead");
   $("#q").placeholder = t("search"); $("#platLabel").textContent = t("platLabel");
   $("#filters").setAttribute("aria-label", t("filtersLabel")); $("#empty").textContent = t("empty");
@@ -722,7 +821,7 @@ function renderLangSelect(){
   sel.value = lang;
   sel.onchange = () => {
     lang = sel.value; try { localStorage.setItem("dc-lang", lang); } catch(e){}
-    applyStatic(); renderChipSelect(); renderDevice(); renderFilters();
+    applyStatic(); renderChipSelect(); renderDevice(); renderFilters(); renderDevSelect(); renderDetected();
     if (ER){ renderPlatSelect(); renderGames(); renderPanel(); }
   };
 }
@@ -734,7 +833,70 @@ document.addEventListener("pointermove", e => {
   el.style.setProperty("--my", (e.clientY - r.top) + "px");
 }, {passive: true});
 renderLangSelect(); applyStatic();
-renderChipSelect(); renderDevice(); renderFilters();
+function gpuName(){
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    if (!gl) return null;
+    const ext = gl.getExtension("WEBGL_debug_renderer_info");
+    return String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER) || "");
+  } catch(e){ return null; }
+}
+function chipFromGpu(s, model){
+  if (!s) return null;
+  const pixel = /pixel/i.test(model || "");
+  const A = re => new RegExp("Adreno.*\\b(" + re + ")\\b", "i").test(s);
+  if (A("8[3-9]\\d")) return "sd8e";
+  if (A("750")) return "sd8g3";
+  if (A("740")) return "sd8g2";
+  if (A("730|732|735")) return "sd8g1";
+  if (A("725|660")) return "sd888";
+  if (A("650|640|630")) return "sd865";
+  if (A("642L?|643|644|720")) return "sd7g";
+  if (A("710|612|616|618|619|620")) return "sd7xx";
+  if (A("6[01]\\d|5\\d\\d")) return "sd6xx";
+  if (/Immortalis-G(925|720)|Mali-G1\b|Mali-G1-/i.test(s)) return "d9k";
+  if (/(Immortalis|Mali)-G7(15|10)/i.test(s)) return pixel ? "tg2" : "d8k";
+  if (/Mali-G610/i.test(s)) return "d8k";
+  if (/Mali-G78/i.test(s)) return pixel ? "tg2" : "d1k";
+  if (/Mali-G(615|77)/i.test(s)) return "d1k";
+  if (/Mali-G(68|57)/i.test(s)) return "g99";
+  if (/Mali/i.test(s)) return "g85";
+  if (/Xclipse 9[4-9]\d/i.test(s)) return "ex24";
+  if (/Xclipse/i.test(s)) return "ex14";
+  if (/PowerVR.*DXT/i.test(s)) return "tg5";
+  if (/PowerVR/i.test(s)) return "g85";
+  return null;
+}
+const DETECT = {gpu: gpuName(), model: null};
+const modelReady = (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues
+  ? navigator.userAgentData.getHighEntropyValues(["model"]).then(v => v.model || null).catch(() => null) : Promise.resolve(null))
+  .then(m => { DETECT.model = m; return m; });
+let detectedShown = false;
+function renderDetected(){
+  const el = $("#detected");
+  if (!detectedShown){ el.hidden = true; return; }
+  const what = dev >= 0 ? ER.devs[dev].n : (DETECT.gpu || "").replace(/\s*\(TM\)\s*/i, " ").trim();
+  el.textContent = t("detected", {gpu: what}); el.hidden = false;
+}
+// Solo si el visitante no eligió antes: chip por la GPU y, cuando hay datos, dispositivo por el modelo
+if (!savedChip){
+  const c = chipFromGpu(DETECT.gpu, "");
+  if (c){ chip = chipById[c]; detectedShown = true; }
+}
+const norm2 = s => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+function detectDevice(){
+  if (!ER) return;
+  const saved = store.get("dc-dev");
+  if (saved){ const i = ER.devs.findIndex(d => d.n === saved); if (i >= 0) setDev(i, false); return; }
+  if (savedChip || !DETECT.model) return;
+  const m = norm2(DETECT.model);
+  if (m.length < 4) return;
+  const i = ER.devs.findIndex(d => { const n = norm2(d.n); return n === m || n.endsWith(m) || n.includes(m); });
+  if (i >= 0){ setDev(i, false); detectedShown = true; }
+  else { const c = chipFromGpu(DETECT.gpu, DETECT.model); if (c && chipById[c] !== chip){ chip = chipById[c]; detectedShown = true; } }
+}
+
+renderChipSelect(); renderDevice(); renderFilters(); renderDetected();
 $("#q").addEventListener("input", renderGames);
 window.addEventListener("hashchange", fromHash);
 
@@ -743,7 +905,7 @@ fetch("emuready.json").then(r => { if (!r.ok) throw new Error(r.status); return 
   GAMES = d.games.map(g => ({...g, hid: "g-" + g.id.slice(0, 8), _n: norm(g.t)}))
     .sort((a,b) => b.r.length - a.r.length || a.t.localeCompare(b.t, "es"));
   applyStatic();
-  renderPlatSelect(); fromHash();
+  modelReady.then(() => { detectDevice(); renderChipSelect(); renderDevice(); renderDevSelect(); renderDetected(); renderPlatSelect(); fromHash(); });
 }).catch(() => {
   $("#erinfo").textContent = t("errInfo");
   $("#panel").innerHTML = `<div><div class="meta">${esc(t("errMeta"))}</div><h2>${esc(t("errH"))}</h2></div><p class="notice">${esc(t("errP"))}</p>`;

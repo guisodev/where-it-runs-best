@@ -49,6 +49,20 @@ const DFILE = path.join(DIR, "details.json");
 const details = fs.existsSync(DFILE) ? JSON.parse(fs.readFileSync(DFILE, "utf8")) : {};
 const fields = [], fieldIdx = new Map(), vals = [], valIdx = new Map(), cfgs = [], cfgIdx = new Map();
 let withDetails = 0;
+// Dispositivos (marca + modelo) y portadas
+const devs = [], devIdx = new Map();
+const CVFILE = path.join(DIR, "covers.json");
+const covers = fs.existsSync(CVFILE) ? JSON.parse(fs.readFileSync(CVFILE, "utf8")) : {};
+// URL compacta: T: = thegamesdb (boxart), I: = igdb; las portadas marcadas como eróticas se omiten
+const shortImg = c => {
+  if (!c || !c.img || c.nsfw) return undefined;
+  const u = c.img;
+  if (u.startsWith("https://cdn.thegamesdb.net/images/original/")) return "T:" + u.slice(43);
+  const m = u.match(/^https:\/\/images\.igdb\.com\/igdb\/image\/upload\/[^/]+\/(.+)$/);
+  if (m) return "I:" + m[1];
+  if (u.startsWith("https://media.rawg.io/media/") && !u.includes("/resize/")) return "R:" + u.slice(28);
+  return u.startsWith("https://") ? u : undefined;
+};
 const cfgOf = d => {
   if (!d || !d.cfg || !Object.keys(d.cfg).length) return -1;
   const flat = [];
@@ -63,16 +77,17 @@ for (const l of listings){
   const si = l.soc ? idx(socs, socIdx, l.soc, () => ({n: l.soc, c: chipOf(l.soc, l.socM)})) : -1;
   if (si >= 0 && !socs[si].c) unmatched.set(l.soc, (unmatched.get(l.soc) || 0) + 1);
   const ei = idx(emus, emuIdx, l.emu || "?", () => l.emu || "?");
-  if (!games.has(l.g)) games.set(l.g, {id: l.g, t: l.gt, s, r: []});
-  // fila: [soc, emulador, nota, fps (-1 si no consta), configuración (-1 si no hay)]
+  if (!games.has(l.g)) games.set(l.g, {id: l.g, t: l.gt, s, img: shortImg(covers[l.g]), r: []});
+  const di = l.dev ? idx(devs, devIdx, l.dev, () => ({n: l.dev.replace(/\s+/g, " ").trim(), s: si})) : -1;
+  // fila: [soc, emulador, nota, dispositivo, fps (-1 si no consta), configuración (-1 si no hay)]
   const d = details[l.id];
   if (d) withDetails++;
-  const row = [si, ei, l.p, d && d.fps != null ? d.fps : -1, cfgOf(d)];
-  while (row.length > 3 && row[row.length - 1] === -1) row.pop();
+  const row = [si, ei, l.p, di, d && d.fps != null ? d.fps : -1, cfgOf(d)];
+  while (row.length > 4 && row[row.length - 1] === -1) row.pop();
   games.get(l.g).r.push(row);
   total++;
 }
-const out = {updated: new Date().toISOString().slice(0, 10), total, withDetails, socs, emus, games: [...games.values()]};
+const out = {updated: new Date().toISOString().slice(0, 10), total, withDetails, socs, emus, devs, games: [...games.values()]};
 const writeAtomic = (file, data) => { fs.writeFileSync(file + ".tmp", JSON.stringify(data)); fs.renameSync(file + ".tmp", file); };
 writeAtomic(OUT, out);
 writeAtomic(path.join(path.dirname(OUT), "configs.json"), {fields, vals, cfgs});

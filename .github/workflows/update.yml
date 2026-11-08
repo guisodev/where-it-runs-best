@@ -38,6 +38,15 @@ jobs:
             node fetch.mjs
           fi
 
+      - name: Descargar portadas
+        working-directory: tools
+        run: |
+          if [ "${{ inputs.full }}" = "true" ] || [ "$(date -u +%d)" = "01" ]; then
+            node covers.mjs --full
+          else
+            node covers.mjs
+          fi
+
       - name: Descargar FPS y configuraciones (relleno gradual)
         working-directory: tools
         # Hasta 1500 reportes por día, uno cada 2,5 s (~65 min); lo pendiente sigue al día siguiente
