@@ -44,6 +44,18 @@ const socs = [], socIdx = new Map(), emus = [], emuIdx = new Map(), unmatched = 
 const idx = (arr, map, key, mk) => { if (!map.has(key)){ map.set(key, arr.length); arr.push(mk()); } return map.get(key); };
 const games = new Map();
 let total = 0;
+// Detalles (FPS y configuración) de details.mjs; las configuraciones van aparte y se cargan al abrir un juego
+const DFILE = path.join(DIR, "details.json");
+const details = fs.existsSync(DFILE) ? JSON.parse(fs.readFileSync(DFILE, "utf8")) : {};
+const fields = [], fieldIdx = new Map(), vals = [], valIdx = new Map(), cfgs = [], cfgIdx = new Map();
+let withDetails = 0;
+const cfgOf = d => {
+  if (!d || !d.cfg || !Object.keys(d.cfg).length) return -1;
+  const flat = [];
+  for (const [k, v] of Object.entries(d.cfg)) flat.push(idx(fields, fieldIdx, k, () => k), idx(vals, valIdx, v, () => v));
+  const key = flat.join(",");
+  return idx(cfgs, cfgIdx, key, () => flat);
+};
 for (const l of listings){
   if (!l.g || !l.p) continue;
   const s = sysName[l.sys] || "?";
@@ -52,18 +64,23 @@ for (const l of listings){
   if (si >= 0 && !socs[si].c) unmatched.set(l.soc, (unmatched.get(l.soc) || 0) + 1);
   const ei = idx(emus, emuIdx, l.emu || "?", () => l.emu || "?");
   if (!games.has(l.g)) games.set(l.g, {id: l.g, t: l.gt, s, r: []});
-  games.get(l.g).r.push([si, ei, l.p]);
+  // fila: [soc, emulador, nota, fps (-1 si no consta), configuración (-1 si no hay)]
+  const d = details[l.id];
+  if (d) withDetails++;
+  const row = [si, ei, l.p, d && d.fps != null ? d.fps : -1, cfgOf(d)];
+  while (row.length > 3 && row[row.length - 1] === -1) row.pop();
+  games.get(l.g).r.push(row);
   total++;
 }
-const out = {updated: new Date().toISOString().slice(0, 10), total, socs, emus, games: [...games.values()]};
-const tmp = OUT + ".tmp";
-fs.writeFileSync(tmp, JSON.stringify(out));
-fs.renameSync(tmp, OUT);
+const out = {updated: new Date().toISOString().slice(0, 10), total, withDetails, socs, emus, games: [...games.values()]};
+const writeAtomic = (file, data) => { fs.writeFileSync(file + ".tmp", JSON.stringify(data)); fs.renameSync(file + ".tmp", file); };
+writeAtomic(OUT, out);
+writeAtomic(path.join(path.dirname(OUT), "configs.json"), {fields, vals, cfgs});
 // index.html para GitHub Pages: la misma página con su propia cabecera HTML
 const SRC = path.join(HERE, "..", "donde-corre.html");
 if (fs.existsSync(SRC)){
   const head = `<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="description" content="Qué emulador va mejor en tu Android según los reportes de la comunidad de EmuReady.">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n`;
   fs.writeFileSync(path.join(HERE, "..", "index.html"), head + fs.readFileSync(SRC, "utf8") + "\n</body>\n</html>\n");
 }
-console.log("reportes", total, "juegos", out.games.length, "socs", socs.length, "KB", Math.round(fs.statSync(OUT).size / 1024));
+console.log("reportes", total, "con detalle", withDetails, "configs", cfgs.length, "juegos", out.games.length, "socs", socs.length, "KB", Math.round(fs.statSync(OUT).size / 1024));
 console.log("SoC sin clasificar (top):", [...unmatched].sort((a,b) => b[1]-a[1]).slice(0, 15).map(([n,c]) => n + "(" + c + ")").join(", "));

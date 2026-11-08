@@ -100,6 +100,13 @@ main.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:
 .dist{display:flex;height:10px;border-radius:3px;overflow:hidden;background:var(--sunk);min-width:70px}
 .dist i{display:block;min-width:2px}
 
+.fps{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.verdict-top .fps{display:block;margin-top:2px}
+.emupick{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+.emupick span{font-size:12.5px;color:var(--muted)}
+.cfgtbl td:first-child{color:var(--muted);width:46%}
+.cfgtbl td:nth-child(2){font-weight:500;overflow-wrap:anywhere}
+.share{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .legend{display:flex;gap:8px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
@@ -371,6 +378,7 @@ it:{
   ranks:["Perfetto","Ottimo","Giocabile","Scarso","Entra in gioco","Solo intro","Si carica","Non si avvia"], legendWorst:"Entra in gioco o peggio",
 },
 };
+for (const [l, o] of Object.entries({"es":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Configuración recomendada · {emu}","cfgBasisGood":"Valor más usado en {n} reportes con nota Perfecto o Genial {scope}.","cfgBasisAny":"Valor más usado en {n} reportes {scope}; ninguno tiene nota Perfecto o Genial.","cfgNone":"Todavía no hay configuraciones de {emu} para este juego. Se van añadiendo cada día.","thSetting":"Ajuste","thValue":"Valor","thShare":"Uso","on":"Sí","off":"No","cfgEnglish":"Los nombres de los ajustes se muestran como en EmuReady (en inglés).","progress":"FPS y configuraciones disponibles en el {p} % de los reportes; el resto se añade poco a poco cada día.","cfgLoading":"Cargando configuraciones…","emuPick":"Ver configuración de"},"en":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Recommended settings · {emu}","cfgBasisGood":"Most common value in {n} reports rated Perfect or Great {scope}.","cfgBasisAny":"Most common value in {n} reports {scope}; none is rated Perfect or Great.","cfgNone":"No {emu} settings for this game yet. More are added every day.","thSetting":"Setting","thValue":"Value","thShare":"Share","on":"Yes","off":"No","cfgEnglish":"Setting names are shown as on EmuReady (in English).","progress":"FPS and settings available for {p}% of reports; the rest is added gradually every day.","cfgLoading":"Loading settings…","emuPick":"Show settings for"},"pt":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Configuração recomendada · {emu}","cfgBasisGood":"Valor mais usado em {n} relatos com nota Perfeito ou Ótimo {scope}.","cfgBasisAny":"Valor mais usado em {n} relatos {scope}; nenhum tem nota Perfeito ou Ótimo.","cfgNone":"Ainda não há configurações do {emu} para este jogo. Novas são adicionadas todo dia.","thSetting":"Ajuste","thValue":"Valor","thShare":"Uso","on":"Sim","off":"Não","cfgEnglish":"Os nomes dos ajustes aparecem como no EmuReady (em inglês).","progress":"FPS e configurações disponíveis em {p}% dos relatos; o resto é adicionado aos poucos todo dia.","cfgLoading":"Carregando configurações…","emuPick":"Ver configuração de"},"fr":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Réglages recommandés · {emu}","cfgBasisGood":"Valeur la plus fréquente dans {n} rapports notés Parfait ou Excellent {scope}.","cfgBasisAny":"Valeur la plus fréquente dans {n} rapports {scope} ; aucun n'est noté Parfait ou Excellent.","cfgNone":"Pas encore de réglages {emu} pour ce jeu. D'autres sont ajoutés chaque jour.","thSetting":"Réglage","thValue":"Valeur","thShare":"Part","on":"Oui","off":"Non","cfgEnglish":"Les noms des réglages sont affichés comme sur EmuReady (en anglais).","progress":"FPS et réglages disponibles pour {p} % des rapports ; le reste est ajouté progressivement chaque jour.","cfgLoading":"Chargement des réglages…","emuPick":"Voir les réglages de"},"de":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Empfohlene Einstellungen · {emu}","cfgBasisGood":"Häufigster Wert in {n} Berichten mit Perfekt oder Sehr gut {scope}.","cfgBasisAny":"Häufigster Wert in {n} Berichten {scope}; keiner ist mit Perfekt oder Sehr gut bewertet.","cfgNone":"Noch keine {emu}-Einstellungen für dieses Spiel. Täglich kommen neue hinzu.","thSetting":"Einstellung","thValue":"Wert","thShare":"Anteil","on":"Ja","off":"Nein","cfgEnglish":"Die Namen der Einstellungen werden wie auf EmuReady angezeigt (auf Englisch).","progress":"FPS und Einstellungen für {p} % der Berichte verfügbar; der Rest kommt täglich nach und nach hinzu.","cfgLoading":"Einstellungen werden geladen…","emuPick":"Einstellungen anzeigen für"},"it":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Impostazioni consigliate · {emu}","cfgBasisGood":"Valore più usato in {n} report con voto Perfetto o Ottimo {scope}.","cfgBasisAny":"Valore più usato in {n} report {scope}; nessuno ha voto Perfetto o Ottimo.","cfgNone":"Non ci sono ancora impostazioni di {emu} per questo gioco. Se ne aggiungono ogni giorno.","thSetting":"Impostazione","thValue":"Valore","thShare":"Uso","on":"Sì","off":"No","cfgEnglish":"I nomi delle impostazioni sono mostrati come su EmuReady (in inglese).","progress":"FPS e impostazioni disponibili per il {p}% dei report; il resto si aggiunge poco a poco ogni giorno.","cfgLoading":"Caricamento impostazioni…","emuPick":"Mostra impostazioni di"}})) Object.assign(STR[l], o);
 const LANGS = [["es","Español"],["en","English"],["pt","Português"],["fr","Français"],["de","Deutsch"],["it","Italiano"]];
 
 const pickLang = () => {
@@ -417,10 +425,13 @@ function scopeOf(g, me){
   if (tier.length) return {rows: tier, scope: "tier"};
   return {rows: g.r, scope: "all"};
 }
+const fpsOf = r => r.length > 3 && r[3] >= 0 ? r[3] : null;
+const cfgIdOf = r => r.length > 4 && r[4] >= 0 ? r[4] : null;
 function byEmulator(rows){
   const m = new Map();
-  for (const r of rows){ if (!m.has(r[1])) m.set(r[1], []); m.get(r[1]).push(r[2]); }
-  return [...m].map(([e, ps]) => ({emu: ER.emus[e], ps, n: ps.length, med: median(ps)}))
+  for (const r of rows){ if (!m.has(r[1])) m.set(r[1], []); m.get(r[1]).push(r); }
+  return [...m].map(([e, rs]) => { const ps = rs.map(r => r[2]), fps = rs.map(fpsOf).filter(x => x !== null);
+      return {id: e, emu: ER.emus[e], rs, ps, n: ps.length, med: median(ps), fps: fps.length ? median(fps) : null, nfps: fps.length}; })
     .sort((a,b) => a.med - b.med || b.n - a.n);
 }
 function bySoc(rows){
@@ -500,6 +511,43 @@ function distBar(ps){
 const pill = med => `<span class="pill v-${RANK_K[med]}">${rankName(med)}</span>`;
 const legend = () => `<div class="legend">${RANK_K.slice(1).map((k, i) => ({k, es: rankName(i + 1)})).filter((r, i, a) => a.findIndex(x => x.k === r.k) === i).map((r, i) => `<span><i class="c-${r.k}"></i>${i === 4 ? t("legendWorst") : r.es}</span>`).join("")}</div>`;
 
+let CFG = null, cfgLoad = null, cfgEmu = null;
+function loadCfg(){
+  if (!cfgLoad) cfgLoad = fetch("configs.json").then(r => r.ok ? r.json() : null).then(d => { CFG = d; if (current) renderPanel(); }).catch(() => {});
+  return cfgLoad;
+}
+const fpsText = (v, n) => v === null ? "—" : `<span class="fps" title="${n}">${esc(t("fpsBadge", {n: Math.round(v)}))}</span>`;
+const valText = v => v === "true" ? "✓ " + esc(t("on")) : v === "false" ? "✗ " + esc(t("off")) : esc(String(v).split("|||")[0]);
+// Configuración más usada para un emulador: primero en tu chip/gama; si no hay, en todos los dispositivos
+function renderCfg(g, sc, emus){
+  const withCfg = emus.filter(e => g.r.some(r => r[1] === e.id && cfgIdOf(r) !== null));
+  if (!ER.withDetails) return "";
+  if (!CFG){ loadCfg(); return withCfg.length ? `<div class="block"><p class="meta" style="margin:0">${esc(t("cfgLoading"))}</p></div>` : ""; }
+  if (!withCfg.length) return emus[0] ? `<div class="block"><h4>${esc(t("cfgHead", {emu: emus[0].emu}))}</h4><p class="meta" style="margin:0">${esc(t("cfgNone", {emu: emus[0].emu}))}</p></div>` : "";
+  const sel = withCfg.find(e => e.id === cfgEmu) || withCfg[0];
+  const pick = rows => rows.filter(r => r[1] === sel.id && cfgIdOf(r) !== null);
+  let rows = pick(sc.rows), scope = sc.scope;
+  if (!rows.length){ rows = pick(g.r); scope = "all"; }
+  const good = rows.filter(r => r[2] <= 2), use = good.length ? good : rows;
+  const counts = new Map();
+  for (const r of use){
+    const flat = CFG.cfgs[cfgIdOf(r)];
+    for (let i = 0; i < flat.length; i += 2){
+      const f = flat[i], v = flat[i + 1];
+      if (!counts.has(f)) counts.set(f, new Map());
+      const m = counts.get(f); m.set(v, (m.get(v) || 0) + 1);
+    }
+  }
+  const lines = [...counts].map(([f, m]) => { const [v, c] = [...m].sort((a, b) => b[1] - a[1])[0]; const tot = [...m.values()].reduce((a, b) => a + b, 0); return {f, v, c, tot}; })
+    .filter(x => x.tot >= Math.max(1, use.length * 0.5)).sort((a, b) => b.tot - a.tot || a.f - b.f);
+  const picker = withCfg.length > 1 ? `<div class="emupick"><span>${esc(t("emuPick"))}</span>${withCfg.map(e => `<button class="chip" data-emu="${e.id}" aria-pressed="${e.id === sel.id}">${esc(e.emu)}</button>`).join("")}</div>` : "";
+  return `<div class="block"><h4>${esc(t("cfgHead", {emu: sel.emu}))}</h4>${picker}
+    <p class="meta" style="margin:0 0 8px">${esc(t(good.length ? "cfgBasisGood" : "cfgBasisAny", {n: use.length, scope: scopeText(scope, chip)}))}</p>
+    <div class="tblwrap"><table class="tbl cfgtbl"><thead><tr><th>${t("thSetting")}</th><th>${t("thValue")}</th><th>${t("thShare")}</th></tr></thead>
+    <tbody>${lines.map(x => `<tr><td>${esc(CFG.fields[x.f])}</td><td>${valText(CFG.vals[x.v])}</td><td class="share">${x.c}/${x.tot}</td></tr>`).join("")}</tbody></table></div>
+    <p class="meta" style="margin:8px 0 0">${esc(t("cfgEnglish"))}</p></div>`;
+}
+
 function renderPanel(){
   const p = $("#panel");
   if (!ER) return;
@@ -510,22 +558,24 @@ function renderPanel(){
   p.innerHTML = `
     <div><div class="meta">${esc((g.s + " · " + t("gameMeta", {n: g.r.length})).toLocaleUpperCase(lang))}</div><h2>${esc(g.t)}</h2></div>
     <div class="verdict-top">
-      <div><div class="lbl">${esc(t("bestEmu", {scope: scopeText(sc.scope, chip)}))}</div><strong>${esc(top.emu)}</strong></div>
+      <div><div class="lbl">${esc(t("bestEmu", {scope: scopeText(sc.scope, chip)}))}</div><strong>${esc(top.emu)}</strong>${top.fps !== null ? fpsText(top.fps, top.nfps) : ""}</div>
       <span style="margin-left:auto">${pill(top.med)}</span>
     </div>
     ${sc.scope !== "all" && sc.rows.length < 3 ? `<p class="notice">${esc(t(sc.rows.length === 1 ? "fewOne" : "fewMany", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</p>` : ""}
     ${sc.scope === "tier" ? `<p class="notice">${esc(t("tierNotice", {n: sc.rows.length}))}</p>` : ""}
     ${sc.scope === "all" ? `<p class="notice">${esc(t("allNotice"))}</p>` : ""}
     <div class="block"><h4>${esc(t("emusHead", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</h4>
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thEmu")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th>${t("thMed")}</th></tr></thead>
-      <tbody>${emus.map(e => `<tr><td><strong>${esc(e.emu)}</strong></td><td class="num">${e.n}</td><td class="bar">${distBar(e.ps)}</td><td>${pill(e.med)}</td></tr>`).join("")}</tbody></table></div>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thEmu")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th class="num">${t("thFps")}</th><th>${t("thMed")}</th></tr></thead>
+      <tbody>${emus.map(e => `<tr><td><strong>${esc(e.emu)}</strong></td><td class="num">${e.n}</td><td class="bar">${distBar(e.ps)}</td><td class="num">${fpsText(e.fps, e.nfps)}</td><td>${pill(e.med)}</td></tr>`).join("")}</tbody></table></div>
     </div>
+    ${renderCfg(g, sc, emus)}
     ${socs.length ? `<div class="block"><h4>${esc(t("socsHead"))}</h4>
       <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thChip")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th>${t("thMed")}</th></tr></thead>
       <tbody>${socs.map(s => `<tr class="${s.soc.c === chip.id ? "mine" : ""}"><td>${esc(s.soc.n)}</td><td class="num">${s.n}</td><td class="bar">${distBar(s.ps)}</td><td>${pill(s.med)}</td></tr>`).join("")}</tbody></table></div>
     </div>` : ""}
     <p class="meta" style="margin:0">${t("moreLink", {link: `<a href="https://www.emuready.com/games/${esc(g.id)}" target="_blank" rel="noopener">${esc(t("seeOn", {g: g.t}))}</a>`})}</p>
     ${legend()}`;
+  p.querySelectorAll("[data-emu]").forEach(b => b.onclick = () => { cfgEmu = Number(b.dataset.emu); renderPanel(); });
 }
 
 // Sin juego: mejor emulador por consola según todos los reportes de tu chip o gama
@@ -556,7 +606,9 @@ function renderOverview(){
 
 function fromHash(){
   const h = location.hash.slice(1);
-  current = GAMES.some(g => g.hid === h) ? h : null;
+  const next = GAMES.some(g => g.hid === h) ? h : null;
+  if (next !== current) cfgEmu = null;
+  current = next;
   renderGames(); renderPanel();
   if (current && window.innerWidth <= 860) $("#panel").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
 }
@@ -571,7 +623,8 @@ function applyStatic(){
   $("#q").placeholder = t("search"); $("#platLabel").textContent = t("platLabel");
   $("#filters").setAttribute("aria-label", t("filtersLabel")); $("#empty").textContent = t("empty");
   $("#footer1").innerHTML = t("footer1", {link: EMU_LINK()}); $("#footer2").textContent = t("footer2");
-  $("#erinfo").innerHTML = ER ? t("info", {n: fmt(ER.total), g: fmt(GAMES.length), link: EMU_LINK(), d: esc(new Date(ER.updated + "T12:00:00").toLocaleDateString(lang, {day:"numeric", month:"long", year:"numeric"}))}) : esc(t("loading"));
+  $("#erinfo").innerHTML = ER ? t("info", {n: fmt(ER.total), g: fmt(GAMES.length), link: EMU_LINK(), d: esc(new Date(ER.updated + "T12:00:00").toLocaleDateString(lang, {day:"numeric", month:"long", year:"numeric"}))})
+    + (ER.withDetails < ER.total ? "<br>" + esc(t("progress", {p: (ER.withDetails / ER.total * 100).toLocaleString(lang, {maximumFractionDigits: 1})})) : "") : esc(t("loading"));
   if (!ER) $("#panel").innerHTML = '<div><div class="meta">' + esc(t("loadMeta")) + '</div><h2>' + esc(t("loadH")) + '</h2></div>';
 }
 function renderLangSelect(){
