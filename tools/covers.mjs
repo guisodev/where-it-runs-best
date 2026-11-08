@@ -8,7 +8,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DIR = path.join(HERE, "data");
 const CFILE = path.join(DIR, "covers.json");
 const BASE = "https://www.emuready.com/api/mobile/trpc/";
-const UA = "donde-corre-app (non-commercial compatibility viewer)";
+const UA = "where-it-runs-best (non-commercial compatibility viewer)";
 const PAUSE = 2500;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 

@@ -92,9 +92,12 @@ const writeAtomic = (file, data) => { fs.writeFileSync(file + ".tmp", JSON.strin
 writeAtomic(OUT, out);
 writeAtomic(path.join(path.dirname(OUT), "configs.json"), {fields, vals, cfgs});
 // index.html para GitHub Pages: la misma página con su propia cabecera HTML
-const SRC = path.join(HERE, "..", "donde-corre.html");
+const SRC = path.join(HERE, "..", "where-it-runs-best.html");
 if (fs.existsSync(SRC)){
-  const head = `<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="description" content="Qué emulador va mejor en tu Android según los reportes de la comunidad de EmuReady.">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n`;
+  const head = `<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="description" content="Where It Runs Best: qué emulador va mejor en tu Android según los reportes de la comunidad de EmuReady.">
+<meta property="og:title" content="Where It Runs Best">
+<meta property="og:description" content="Which emulator runs your game best on Android, from EmuReady community reports.">
+<meta name="application-name" content="Where It Runs Best">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n`;
   fs.writeFileSync(path.join(HERE, "..", "index.html"), head + fs.readFileSync(SRC, "utf8") + "\n</body>\n</html>\n");
 }
 console.log("reportes", total, "con detalle", withDetails, "configs", cfgs.length, "juegos", out.games.length, "socs", socs.length, "KB", Math.round(fs.statSync(OUT).size / 1024));

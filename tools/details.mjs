@@ -11,7 +11,7 @@ const DIR = path.join(HERE, "data");
 const argMax = process.argv.indexOf("--max");
 const MAX = Number(argMax > 0 ? process.argv[argMax + 1] : process.env.DETAILS_MAX || 1500);
 const BASE = "https://www.emuready.com/api/mobile/trpc/";
-const UA = "donde-corre-app (non-commercial compatibility viewer)";
+const UA = "where-it-runs-best (non-commercial compatibility viewer)";
 const PAUSE = 2500;
 const SKIP = /youtube|screenshot|blog post|game version|average fps/i;   // campos que no son ajustes
 const sleep = ms => new Promise(r => setTimeout(r, ms));

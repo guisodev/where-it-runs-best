@@ -1,8 +1,8 @@
-# ¿Dónde corre?
+# Where It Runs Best
 
 Elige tu chip Android y un juego para ver qué emulador va mejor según los reportes de la comunidad de [EmuReady](https://www.emuready.com).
 
-- `donde-corre.html`: la página (fuente).
+- `where-it-runs-best.html`: la página (fuente).
 - `index.html`: la misma página lista para GitHub Pages (se genera con `tools/build.mjs`).
 - `emuready.json`: resumen compacto de los reportes que lee la página.
 - `tools/fetch.mjs`: descarga reportes de la API pública de EmuReady hacia `tools/data/` (`--full` para descarga completa).
