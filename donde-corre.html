@@ -136,6 +136,25 @@ main.wrap > .panel{animation-delay:.3s}
 .game .t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 .game .t small{font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .empty{color:var(--muted);padding:12px 0}
+.toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:-2px 0 12px}
+.toolbar select{background:var(--glass);border:1px solid var(--glass-edge);border-radius:999px;padding:6px 12px;font-size:13px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.seg{display:inline-flex;padding:3px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-edge);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.seg button{border:0;background:transparent;border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;transition:background .25s,color .25s}
+.seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 6px 14px -8px var(--accent)}
+.game .x{display:none}
+.games.list{grid-template-columns:minmax(0,1fr);gap:6px}
+.games.list .game{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:12px;padding:8px 12px}
+.games.list .game .x{display:block}
+.games.list .x-emu{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:right;max-width:16ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:480px){.games.list .game{grid-template-columns:34px minmax(0,1fr) auto}.games.list .x-emu{display:none}}
+.game:focus-visible{outline:none;border-color:var(--accent);transform:translateY(-3px);box-shadow:inset 0 1px 0 var(--sheen),0 0 0 3px var(--accent-soft),0 16px 30px -12px var(--accent)}
+.themebtn{border:1px solid var(--glass-edge);background:var(--sunk);border-radius:999px;width:36px;height:34px;cursor:pointer;font-size:16px;line-height:1;transition:transform .3s var(--ease),border-color .2s}
+.themebtn:hover{border-color:var(--accent);transform:rotate(-20deg)}
+.addbtn{display:inline-flex;align-items:center;gap:8px;justify-self:start;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:500;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 10px 24px -12px var(--accent);transition:transform .2s var(--ease),box-shadow .25s}
+.addbtn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -12px var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;max-width:min(92vw,520px);
+  padding:10px 16px;border-radius:14px;font-size:13.5px;animation:rise .4s var(--ease) both}
 .pager{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:16px}
 .pager button{min-width:38px;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--glass-edge);cursor:pointer;
   background:linear-gradient(140deg,var(--sheen),transparent 50%),var(--glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
@@ -226,6 +245,7 @@ footer a{color:inherit}
       <span class="detected" id="detected" hidden></span>
     </div>
     <div class="lang"><label class="sr" for="lang" id="langLabel">Idioma</label><select id="lang"></select></div>
+    <button id="theme" class="themebtn" type="button"></button>
   </div>
 </header>
 
@@ -244,6 +264,8 @@ footer a{color:inherit}
     </div>
     <p class="count" id="count"></p>
     <div class="filters" id="filters" role="group" aria-label="Filtrar"></div>
+    <div class="toolbar"><label class="sr" for="sort" id="sortLabel">Ordenar</label><select id="sort"></select>
+      <div class="seg" id="view" role="group"></div></div>
     <div class="games" id="games"></div>
     <nav class="pager" id="pager" hidden></nav>
     <p class="empty" id="empty" hidden>Ningún juego coincide. Prueba con otro nombre o quita los filtros.</p>
@@ -256,6 +278,7 @@ footer a{color:inherit}
 
 <footer class="wrap">
   <p id="footer1">Todos los datos provienen de <a href="https://www.emuready.com" target="_blank" rel="noopener">EmuReady</a>, una base de datos comunitaria de compatibilidad. Se usan sin fines comerciales y cada juego enlaza a su ficha original, donde puedes leer los detalles y aportar tu propio reporte.</p>
+  <p id="keys"></p>
   <p id="footer2">La agrupación de chips por gama es una aproximación de esta app y solo se usa cuando no hay reportes de tu chip exacto. Los emuladores y ports requieren tus propios archivos del juego.</p>
 </footer>
 
@@ -483,6 +506,7 @@ it:{
 for (const [l, o] of Object.entries({"es":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Configuración recomendada · {emu}","cfgBasisGood":"Valor más usado en {n} reportes con nota Perfecto o Genial {scope}.","cfgBasisAny":"Valor más usado en {n} reportes {scope}; ninguno tiene nota Perfecto o Genial.","cfgNone":"Todavía no hay configuraciones de {emu} para este juego. Se van añadiendo cada día.","thSetting":"Ajuste","thValue":"Valor","thShare":"Uso","on":"Sí","off":"No","cfgEnglish":"Los nombres de los ajustes se muestran como en EmuReady (en inglés).","progress":"FPS y configuraciones disponibles en el {p} % de los reportes; el resto se añade poco a poco cada día.","cfgLoading":"Cargando configuraciones…","emuPick":"Ver configuración de"},"en":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Recommended settings · {emu}","cfgBasisGood":"Most common value in {n} reports rated Perfect or Great {scope}.","cfgBasisAny":"Most common value in {n} reports {scope}; none is rated Perfect or Great.","cfgNone":"No {emu} settings for this game yet. More are added every day.","thSetting":"Setting","thValue":"Value","thShare":"Share","on":"Yes","off":"No","cfgEnglish":"Setting names are shown as on EmuReady (in English).","progress":"FPS and settings available for {p}% of reports; the rest is added gradually every day.","cfgLoading":"Loading settings…","emuPick":"Show settings for"},"pt":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Configuração recomendada · {emu}","cfgBasisGood":"Valor mais usado em {n} relatos com nota Perfeito ou Ótimo {scope}.","cfgBasisAny":"Valor mais usado em {n} relatos {scope}; nenhum tem nota Perfeito ou Ótimo.","cfgNone":"Ainda não há configurações do {emu} para este jogo. Novas são adicionadas todo dia.","thSetting":"Ajuste","thValue":"Valor","thShare":"Uso","on":"Sim","off":"Não","cfgEnglish":"Os nomes dos ajustes aparecem como no EmuReady (em inglês).","progress":"FPS e configurações disponíveis em {p}% dos relatos; o resto é adicionado aos poucos todo dia.","cfgLoading":"Carregando configurações…","emuPick":"Ver configuração de"},"fr":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Réglages recommandés · {emu}","cfgBasisGood":"Valeur la plus fréquente dans {n} rapports notés Parfait ou Excellent {scope}.","cfgBasisAny":"Valeur la plus fréquente dans {n} rapports {scope} ; aucun n'est noté Parfait ou Excellent.","cfgNone":"Pas encore de réglages {emu} pour ce jeu. D'autres sont ajoutés chaque jour.","thSetting":"Réglage","thValue":"Valeur","thShare":"Part","on":"Oui","off":"Non","cfgEnglish":"Les noms des réglages sont affichés comme sur EmuReady (en anglais).","progress":"FPS et réglages disponibles pour {p} % des rapports ; le reste est ajouté progressivement chaque jour.","cfgLoading":"Chargement des réglages…","emuPick":"Voir les réglages de"},"de":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Empfohlene Einstellungen · {emu}","cfgBasisGood":"Häufigster Wert in {n} Berichten mit Perfekt oder Sehr gut {scope}.","cfgBasisAny":"Häufigster Wert in {n} Berichten {scope}; keiner ist mit Perfekt oder Sehr gut bewertet.","cfgNone":"Noch keine {emu}-Einstellungen für dieses Spiel. Täglich kommen neue hinzu.","thSetting":"Einstellung","thValue":"Wert","thShare":"Anteil","on":"Ja","off":"Nein","cfgEnglish":"Die Namen der Einstellungen werden wie auf EmuReady angezeigt (auf Englisch).","progress":"FPS und Einstellungen für {p} % der Berichte verfügbar; der Rest kommt täglich nach und nach hinzu.","cfgLoading":"Einstellungen werden geladen…","emuPick":"Einstellungen anzeigen für"},"it":{"thFps":"FPS","fpsBadge":"≈{n} FPS","cfgHead":"Impostazioni consigliate · {emu}","cfgBasisGood":"Valore più usato in {n} report con voto Perfetto o Ottimo {scope}.","cfgBasisAny":"Valore più usato in {n} report {scope}; nessuno ha voto Perfetto o Ottimo.","cfgNone":"Non ci sono ancora impostazioni di {emu} per questo gioco. Se ne aggiungono ogni giorno.","thSetting":"Impostazione","thValue":"Valore","thShare":"Uso","on":"Sì","off":"No","cfgEnglish":"I nomi delle impostazioni sono mostrati come su EmuReady (in inglese).","progress":"FPS e impostazioni disponibili per il {p}% dei report; il resto si aggiunge poco a poco ogni giorno.","cfgLoading":"Caricamento impostazioni…","emuPick":"Mostra impostazioni di"}})) Object.assign(STR[l], o);
 for (const [l, o] of Object.entries({"es":{"devLabel":"Dispositivo","anyDev":"Cualquier dispositivo con este chip","scopeDev":"en {dev}","detected":"Detectado: {gpu}","cardDev":"{s} · {n} en tu dispositivo","devFallback":"Nadie lo ha reportado aún en tu {dev}; se usan los reportes de chips como el tuyo."},"en":{"devLabel":"Device","anyDev":"Any device with this chip","scopeDev":"on {dev}","detected":"Detected: {gpu}","cardDev":"{s} · {n} on your device","devFallback":"No one has reported it on your {dev} yet; reports from chips like yours are used."},"pt":{"devLabel":"Aparelho","anyDev":"Qualquer aparelho com este chip","scopeDev":"no {dev}","detected":"Detectado: {gpu}","cardDev":"{s} · {n} no seu aparelho","devFallback":"Ninguém relatou ainda no seu {dev}; são usados relatos de chips como o seu."},"fr":{"devLabel":"Appareil","anyDev":"Tout appareil avec cette puce","scopeDev":"sur {dev}","detected":"Détecté : {gpu}","cardDev":"{s} · {n} sur votre appareil","devFallback":"Personne ne l'a encore signalé sur votre {dev} ; les rapports de puces comme la vôtre sont utilisés."},"de":{"devLabel":"Gerät","anyDev":"Jedes Gerät mit diesem Chip","scopeDev":"auf {dev}","detected":"Erkannt: {gpu}","cardDev":"{s} · {n} auf deinem Gerät","devFallback":"Noch niemand hat es auf deinem {dev} gemeldet; es werden Berichte von Chips wie deinem genutzt."},"it":{"devLabel":"Dispositivo","anyDev":"Qualsiasi dispositivo con questo chip","scopeDev":"su {dev}","detected":"Rilevato: {gpu}","cardDev":"{s} · {n} sul tuo dispositivo","devFallback":"Nessuno l'ha ancora segnalato sul tuo {dev}; si usano i report di chip come il tuo."}})) Object.assign(STR[l], o);
 for (const [l, o] of Object.entries({"es":{"prev":"Anterior","next":"Siguiente","pageOf":"Página {a} de {b}","countPaged":"{a}–{b} de {n} juegos","pagesLabel":"Páginas"},"en":{"prev":"Previous","next":"Next","pageOf":"Page {a} of {b}","countPaged":"{a}–{b} of {n} games","pagesLabel":"Pages"},"pt":{"prev":"Anterior","next":"Próxima","pageOf":"Página {a} de {b}","countPaged":"{a}–{b} de {n} jogos","pagesLabel":"Páginas"},"fr":{"prev":"Précédent","next":"Suivant","pageOf":"Page {a} sur {b}","countPaged":"{a}–{b} sur {n} jeux","pagesLabel":"Pages"},"de":{"prev":"Zurück","next":"Weiter","pageOf":"Seite {a} von {b}","countPaged":"{a}–{b} von {n} Spielen","pagesLabel":"Seiten"},"it":{"prev":"Precedente","next":"Successiva","pageOf":"Pagina {a} di {b}","countPaged":"{a}–{b} di {n} giochi","pagesLabel":"Pagine"}})) Object.assign(STR[l], o);
+for (const [l, o] of Object.entries({"es":{"sortLabel":"Ordenar","sortReports":"Más reportes","sortRating":"Mejor nota","sortName":"Nombre","sortFps":"Más FPS","viewLabel":"Vista","viewGrid":"Cuadrícula","viewList":"Lista","addReport":"Añadir mi reporte en EmuReady","themeLabel":"Tema","themeAuto":"Automático","themeLight":"Claro","themeDark":"Oscuro","keysHint":"Atajos: / buscar · flechas para moverte · Enter abrir · RePág/AvPág cambiar de página · Esc volver. Con mando: cruceta, A abrir, B volver, LB/RB páginas, Y buscar.","padOn":"Mando conectado: cruceta para moverte, A abrir, B volver, LB/RB cambiar de página"},"en":{"sortLabel":"Sort","sortReports":"Most reports","sortRating":"Best rating","sortName":"Name","sortFps":"Most FPS","viewLabel":"View","viewGrid":"Grid","viewList":"List","addReport":"Add my report on EmuReady","themeLabel":"Theme","themeAuto":"Auto","themeLight":"Light","themeDark":"Dark","keysHint":"Shortcuts: / search · arrows to move · Enter open · PgUp/PgDn change page · Esc back. With a controller: D-pad, A open, B back, LB/RB pages, Y search.","padOn":"Controller connected: D-pad to move, A to open, B to go back, LB/RB to change page"},"pt":{"sortLabel":"Ordenar","sortReports":"Mais relatos","sortRating":"Melhor nota","sortName":"Nome","sortFps":"Mais FPS","viewLabel":"Visualização","viewGrid":"Grade","viewList":"Lista","addReport":"Enviar meu relato no EmuReady","themeLabel":"Tema","themeAuto":"Automático","themeLight":"Claro","themeDark":"Escuro","keysHint":"Atalhos: / buscar · setas para mover · Enter abrir · PgUp/PgDn mudar de página · Esc voltar. Com controle: direcional, A abrir, B voltar, LB/RB páginas, Y buscar.","padOn":"Controle conectado: direcional para mover, A abrir, B voltar, LB/RB mudar de página"},"fr":{"sortLabel":"Trier","sortReports":"Plus de rapports","sortRating":"Meilleure note","sortName":"Nom","sortFps":"Plus de FPS","viewLabel":"Affichage","viewGrid":"Grille","viewList":"Liste","addReport":"Ajouter mon rapport sur EmuReady","themeLabel":"Thème","themeAuto":"Auto","themeLight":"Clair","themeDark":"Sombre","keysHint":"Raccourcis : / rechercher · flèches pour se déplacer · Entrée ouvrir · PgPréc/PgSuiv changer de page · Échap retour. À la manette : croix, A ouvrir, B retour, LB/RB pages, Y rechercher.","padOn":"Manette connectée : croix pour se déplacer, A ouvrir, B retour, LB/RB changer de page"},"de":{"sortLabel":"Sortieren","sortReports":"Meiste Berichte","sortRating":"Beste Bewertung","sortName":"Name","sortFps":"Meiste FPS","viewLabel":"Ansicht","viewGrid":"Raster","viewList":"Liste","addReport":"Meinen Bericht auf EmuReady hinzufügen","themeLabel":"Design","themeAuto":"Automatisch","themeLight":"Hell","themeDark":"Dunkel","keysHint":"Tastenkürzel: / suchen · Pfeile zum Bewegen · Enter öffnen · Bild↑/Bild↓ Seite wechseln · Esc zurück. Mit Controller: Steuerkreuz, A öffnen, B zurück, LB/RB Seiten, Y suchen.","padOn":"Controller verbunden: Steuerkreuz zum Bewegen, A öffnen, B zurück, LB/RB Seite wechseln"},"it":{"sortLabel":"Ordina","sortReports":"Più report","sortRating":"Voto migliore","sortName":"Nome","sortFps":"Più FPS","viewLabel":"Vista","viewGrid":"Griglia","viewList":"Elenco","addReport":"Aggiungi il mio report su EmuReady","themeLabel":"Tema","themeAuto":"Automatico","themeLight":"Chiaro","themeDark":"Scuro","keysHint":"Scorciatoie: / cerca · frecce per muoverti · Invio apri · PagSu/PagGiù cambia pagina · Esc indietro. Con controller: croce, A apri, B indietro, LB/RB pagine, Y cerca.","padOn":"Controller collegato: croce per muoverti, A apri, B indietro, LB/RB cambia pagina"}})) Object.assign(STR[l], o);
 const LANGS = [["es","Español"],["en","English"],["pt","Português"],["fr","Français"],["de","Deutsch"],["it","Italiano"]];
 
 const pickLang = () => {
@@ -518,6 +542,66 @@ const initials = s => esc(s.replace(/[^A-Za-z0-9 ]/g, "").split(" ").filter(Bool
 let ER = null, GAMES = [];
 let filter = "all", plat = "", current = null;
 const PAGE_SIZE = 48;
+let sortBy = store.get("dc-sort") || "reports", view = store.get("dc-view") || "grid";
+// Palabras en español → título en inglés de EmuReady, y abreviaturas habituales
+const ALIAS = {escarlata:"scarlet", purpura:"violet", espada:"sword", escudo:"shield", leyendas:"legends", leyenda:"legend", reino:"kingdom",
+  lagrimas:"tears", aliento:"breath", salvaje:"wild", mundo:"world", diamante:"diamond", perla:"pearl", luna:"moon", sol:"sun", rojo:"red",
+  azul:"blue", negro:"black", blanco:"white", oro:"gold", plata:"silver", esmeralda:"emerald", rubi:"ruby", zafiro:"sapphire", platino:"platinum",
+  cristal:"crystal", hermanos:"bros", guerra:"war", dios:"god", caballero:"knight", noche:"night", sombra:"shadow", sombras:"shadows",
+  fantasma:"ghost", sueno:"dream", suenos:"dreams", fuego:"fire", hielo:"ice", estrella:"star", estrellas:"stars", galaxia:"galaxy", isla:"island"};
+const ABBR = {botw:"breath of the wild", totk:"tears of the kingdom", mk8:"mario kart 8", mk8d:"mario kart 8 deluxe", smo:"super mario odyssey",
+  gta:"grand theft auto", re4:"resident evil 4", mgs:"metal gear solid", ff:"final fantasy", kh:"kingdom hearts", gow:"god of war",
+  p3:"persona 3", p4:"persona 4", p5:"persona 5", p5r:"persona 5 royal", p4g:"persona 4 golden", ssbu:"super smash bros ultimate",
+  smash:"super smash bros", acnh:"animal crossing new horizons", nfs:"need for speed", cod:"call of duty", rdr:"red dead redemption",
+  rdr2:"red dead redemption 2", dbz:"dragon ball z", mh:"monster hunter", mhw:"monster hunter world", mhr:"monster hunter rise",
+  tlou:"the last of us", hk:"hollow knight", sm64:"super mario 64", oot:"ocarina of time", mm:"majoras mask", xc:"xenoblade chronicles",
+  dk:"donkey kong", sf:"street fighter", mk:"mortal kombat", tw3:"the witcher 3", nier:"nier", ds:"dark souls", er:"elden ring"};
+const ROMAN = {"1":"i","2":"ii","3":"iii","4":"iv","5":"v","6":"vi","7":"vii","8":"viii","9":"ix","10":"x","11":"xi","12":"xii","13":"xiii","15":"xv","16":"xvi"};
+for (const [a, r] of Object.entries(ROMAN)) ROMAN[r] = a;
+const STOP = new Set(["de","del","la","el","los","las","the","of","y","and","a","en"]);
+const words = s => norm(s).replace(/[^a-z0-9]+/g, " ").trim().split(" ").filter(Boolean);
+function lev(a, b, max){
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({length: b.length + 1}, (_, i) => i);
+  for (let i = 1; i <= a.length; i++){
+    const cur = [i]; let best = i;
+    for (let j = 1; j <= b.length; j++){
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (cur[j] < best) best = cur[j];
+    }
+    if (best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function queryTokens(raw){
+  let ws = words(raw).flatMap(w => ABBR[w] ? ABBR[w].split(" ") : [w]);
+  const kept = ws.filter(w => !STOP.has(w));
+  if (kept.length) ws = kept;
+  return ws.map(w => [...new Set([w, ALIAS[w], ROMAN[w]].filter(Boolean))]);
+}
+// 0 = no coincide; más alto = mejor coincidencia
+function matchScore(g, toks, phrase){
+  if (!g._w) g._w = words(g.t);
+  let score = phrase && g._n.includes(phrase) ? 4 : 0;
+  for (const alts of toks){
+    let best = 0;
+    for (const a of alts){
+      for (const w of g._w){
+        if (w === a){ best = 3; break; }
+        if (a.length >= 2 && w.startsWith(a)) best = Math.max(best, 2);
+        else if (a.length >= 4){
+          const max = a.length >= 7 ? 2 : 1;
+          if (lev(a, w, max) <= max || (w.length > a.length && lev(a, w.slice(0, a.length), max) <= max)) best = Math.max(best, 1);
+        }
+      }
+      if (best === 3) break;
+    }
+    if (!best) return 0;
+    score += best;
+  }
+  return score;
+}
 let page = 1;
 
 const $ = s => document.querySelector(s);
@@ -560,7 +644,7 @@ const scopeText = (s, me) => s === "dev" ? t("scopeDev", {dev: devName()}) : s =
 function summary(g){
   if (!g._sum || g._sum.chip !== chip.id || g._sum.dev !== dev){
     const sc = scopeOf(g, chip), top = byEmulator(sc.rows)[0];
-    g._sum = {chip: chip.id, dev, med: top ? top.med : 8, scope: sc.scope, n: sc.rows.length};
+    g._sum = {chip: chip.id, dev, emu: top ? top.emu : "", fps: top ? top.fps : null, med: top ? top.med : 8, scope: sc.scope, n: sc.rows.length};
   }
   return g._sum;
 }
@@ -624,28 +708,37 @@ function resetFilters(){ $("#q").value = ""; plat = ""; $("#plat").value = ""; f
 function renderGames(){
   if (!ER) return;
   const q = norm($("#q").value.trim());
+  const toks = q ? queryTokens(q) : null, phrase = q.replace(/[^a-z0-9 ]+/g, " ").trim();
   const list = GAMES.filter(g => {
-    if (q && !g._n.includes(q)) return false;
+    if (toks){ g._score = matchScore(g, toks, phrase); if (!g._score) return false; }
     if (plat && g.s !== plat) return false;
     if (filter === "mine") return ["exact", "dev"].includes(summary(g).scope);
     if (filter === "good") { const s = summary(g); return s.scope !== "all" && s.med <= 2; }
     return true;
   });
+  // Orden: relevancia al buscar (si se ordena por reportes), o el criterio elegido
+  const rankScope = s => s.scope === "all" ? 1 : 0;
+  if (sortBy === "rating") list.sort((a, b) => { const x = summary(a), y = summary(b); return rankScope(x) - rankScope(y) || x.med - y.med || y.n - x.n; });
+  else if (sortBy === "name") list.sort((a, b) => a.t.localeCompare(b.t, lang));
+  else if (sortBy === "fps") list.sort((a, b) => (summary(b).fps ?? -1) - (summary(a).fps ?? -1) || b.r.length - a.r.length);
+  else if (toks) list.sort((a, b) => b._score - a._score || b.r.length - a.r.length);
   // Al cambiar búsqueda o filtros se vuelve a la página 1
-  const fsig = [q, plat, filter, chip.id, dev].join("|");
+  const fsig = [q, plat, filter, chip.id, dev, sortBy].join("|");
   if (fsig !== renderGames.fsig){ page = 1; renderGames.fsig = fsig; }
   const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
   page = Math.min(page, pages);
   const from = (page - 1) * PAGE_SIZE, shown = list.slice(from, from + PAGE_SIZE);
   const sig = [fsig, lang, page].join("|");
   $("#games").classList.toggle("still", sig === renderGames.sig);
+  $("#games").classList.toggle("list", view === "list");
+  renderGames.pages = pages;
   renderGames.sig = sig;
   $("#games").innerHTML = shown.map((g, i) => {
     const s = summary(g), r = {k: RANK_K[s.med], es: rankName(s.med)};
     const sub = s.scope === "dev" ? t("cardDev", {s: g.s, n: s.n}) : s.scope === "exact" ? t("cardMine", {s: g.s, n: s.n}) : t("cardAll", {s: g.s, n: g.r.length});
     return `<button class="game" style="--i:${Math.min(i, 30)}" data-id="${g.hid}" aria-current="${current === g.hid}">
       <span class="cv">${g.img ? `<img src="${esc(imgUrl(g.img))}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : initials(g.t)}<span class="dot c-${r.k} ${s.scope === "all" ? "dim" : ""}" title="${esc(r.es)} (${esc(scopeText(s.scope, chip))})"></span></span>
-      <span class="t"><span>${esc(g.t)}</span><small>${esc(sub)}</small></span></button>`;
+      <span class="t"><span>${esc(g.t)}</span><small>${esc(sub)}</small></span><span class="x x-emu">${esc(s.emu)}${s.fps !== null ? " · " + Math.round(s.fps) + " FPS" : ""}</span><span class="x">${pill(s.med)}</span></button>`;
   }).join("");
   $("#empty").hidden = list.length > 0;
   const filtered = q || plat || filter !== "all";
@@ -672,7 +765,7 @@ function renderPager(pages){
   html += `<span class="info">${esc(t("pageOf", {a: page, b: pages}))}</span>`;
   nav.innerHTML = html;
   nav.querySelectorAll("button[data-p]").forEach(b => b.onclick = () => {
-    page = Number(b.dataset.p); renderGames();
+    goPage(Number(b.dataset.p));
     const top = $("#q").getBoundingClientRect().top + scrollY - 90;
     if (scrollY > top) scrollTo({top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
   });
@@ -753,6 +846,7 @@ function renderPanel(){
       <tbody>${socs.map(s => `<tr class="${s.soc.c === chip.id ? "mine" : ""}"><td>${esc(s.soc.n)}</td><td class="num">${s.n}</td><td class="bar">${distBar(s.ps)}</td><td>${pill(s.med)}</td></tr>`).join("")}</tbody></table></div>
     </div>` : ""}
     <p class="meta" style="margin:0">${t("moreLink", {link: `<a href="https://www.emuready.com/games/${esc(g.id)}" target="_blank" rel="noopener">${esc(t("seeOn", {g: g.t}))}</a>`})}</p>
+    <a class="addbtn" href="https://www.emuready.com/listings/new?gameId=${encodeURIComponent(g.id)}" target="_blank" rel="noopener">＋ ${esc(t("addReport"))}</a>
     ${legend()}`;
   p.querySelectorAll("[data-emu]").forEach(b => b.onclick = () => { cfgEmu = Number(b.dataset.emu); renderPanel(); });
 }
@@ -793,6 +887,99 @@ function fromHash(){
 }
 function renderAll(){ renderDevice(); renderGames(); renderPanel(); }
 
+function renderToolbar(){
+  const s = $("#sort");
+  s.innerHTML = [["reports","sortReports"],["rating","sortRating"],["fps","sortFps"],["name","sortName"]].map(([v, k]) => `<option value="${v}">${esc(t(k))}</option>`).join("");
+  s.value = sortBy;
+  s.onchange = () => { sortBy = s.value; store.set("dc-sort", sortBy); renderGames(); };
+  const v = $("#view");
+  v.setAttribute("aria-label", t("viewLabel"));
+  v.innerHTML = [["grid","▦","viewGrid"],["list","☰","viewList"]].map(([id, ic, k]) => `<button type="button" data-v="${id}" aria-pressed="${view === id}">${ic} ${esc(t(k))}</button>`).join("");
+  v.querySelectorAll("button").forEach(b => b.onclick = () => { view = b.dataset.v; store.set("dc-view", view); renderToolbar(); renderGames.sig = null; renderGames(); });
+  $("#sortLabel").textContent = t("sortLabel");
+}
+let theme = store.get("dc-theme") || "auto";
+function renderTheme(){
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
+  const b = $("#theme"), name = t(theme === "auto" ? "themeAuto" : theme === "light" ? "themeLight" : "themeDark");
+  b.textContent = theme === "auto" ? "◐" : theme === "light" ? "☀" : "☾";
+  b.title = t("themeLabel") + ": " + name; b.setAttribute("aria-label", b.title);
+  b.onclick = () => { theme = theme === "auto" ? "light" : theme === "light" ? "dark" : "auto"; store.set("dc-theme", theme); renderTheme(); };
+}
+function toast(msg){
+  const el = document.createElement("div");
+  el.className = "toast glass"; el.setAttribute("role", "status"); el.textContent = msg;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 4500);
+}
+function goPage(p, focusWhich){
+  const pages = renderGames.pages || 1;
+  if (p < 1 || p > pages || p === page) return false;
+  page = p; renderGames();
+  const cards = [...document.querySelectorAll("#games .game")];
+  const target = focusWhich === "last" ? cards[cards.length - 1] : focusWhich === "first" ? cards[0] : null;
+  if (target) target.focus();
+  const top = $("#q").getBoundingClientRect().top + scrollY - 90;
+  if (!target && scrollY > top) scrollTo({top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  return true;
+}
+// Mover el foco por la rejilla; en los bordes pasa de página
+function moveFocus(key){
+  const cards = [...document.querySelectorAll("#games .game")];
+  if (!cards.length) return false;
+  const i = cards.indexOf(document.activeElement);
+  if (i < 0){
+    if (document.activeElement && document.activeElement !== document.body && !document.activeElement.closest("#games")) return false;
+    const cur = cards.find(c => c.getAttribute("aria-current") === "true") || cards[0];
+    cur.focus(); return true;
+  }
+  const cols = view === "list" ? 1 : cards.filter(c => c.offsetTop === cards[0].offsetTop).length || 1;
+  const d = {ArrowLeft: -1, ArrowRight: 1, ArrowUp: -cols, ArrowDown: cols}[key];
+  const ni = i + d;
+  if (ni < 0) return goPage(page - 1, "last") || true;
+  if (ni >= cards.length) return goPage(page + 1, "first") || true;
+  cards[ni].focus(); cards[ni].scrollIntoView({block: "nearest"});
+  return true;
+}
+function backToList(){
+  if (document.activeElement && document.activeElement.matches("input,select")){
+    if (document.activeElement === $("#q") && $("#q").value){ $("#q").value = ""; renderGames(); }
+    document.activeElement.blur();
+  }
+  const cur = document.querySelector('#games .game[aria-current="true"]') || document.querySelector("#games .game");
+  if (cur){ cur.focus(); cur.scrollIntoView({block: "nearest"}); }
+}
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const typing = e.target.matches && e.target.matches("input,select,textarea");
+  if (e.key === "/" && !typing){ e.preventDefault(); $("#q").focus(); return; }
+  if (e.key === "Escape"){ backToList(); return; }
+  if (typing) return;
+  if (e.key === "PageDown" || e.key === "]"){ e.preventDefault(); goPage(page + 1); return; }
+  if (e.key === "PageUp" || e.key === "["){ e.preventDefault(); goPage(page - 1); return; }
+  if (e.key.startsWith("Arrow") && moveFocus(e.key)) e.preventDefault();
+});
+// Mando (Gamepad API): cruceta/stick mueve, A abre, B vuelve, LB/RB páginas, Y buscar
+let padRAF = null;
+const padState = {dir: null, next: 0, btn: {}};
+function padLoop(){
+  const pads = navigator.getGamepads ? [...navigator.getGamepads()].filter(Boolean) : [];
+  if (!pads.length){ padRAF = null; return; }
+  const p = pads[0], now = performance.now(), on = i => !!(p.buttons[i] && p.buttons[i].pressed);
+  const ax = p.axes[0] || 0, ay = p.axes[1] || 0;
+  const dir = on(12) || ay < -0.6 ? "ArrowUp" : on(13) || ay > 0.6 ? "ArrowDown" : on(14) || ax < -0.6 ? "ArrowLeft" : on(15) || ax > 0.6 ? "ArrowRight" : null;
+  if (dir && dir !== padState.dir){ moveFocus(dir); padState.next = now + 350; }
+  else if (dir && now >= padState.next){ moveFocus(dir); padState.next = now + 110; }
+  padState.dir = dir;
+  const edge = i => { const was = padState.btn[i]; padState.btn[i] = on(i); return on(i) && !was; };
+  if (edge(0) && document.activeElement && document.activeElement.matches("button, a")) document.activeElement.click();
+  if (edge(1)) backToList();
+  if (edge(4)) goPage(page - 1, "first");
+  if (edge(5)) goPage(page + 1, "first");
+  if (edge(3)) $("#q").focus();
+  padRAF = requestAnimationFrame(padLoop);
+}
+window.addEventListener("gamepadconnected", () => { toast(t("padOn")); if (!padRAF) padLoop(); });
+
 function applyStatic(){
   document.documentElement.lang = lang;
   document.title = t("docTitle");
@@ -801,7 +988,8 @@ function applyStatic(){
   $("#h1").textContent = t("h1"); $("#lead").textContent = t("lead");
   $("#q").placeholder = t("search"); $("#platLabel").textContent = t("platLabel");
   $("#filters").setAttribute("aria-label", t("filtersLabel")); $("#empty").textContent = t("empty");
-  $("#footer1").innerHTML = t("footer1", {link: EMU_LINK()}); $("#footer2").textContent = t("footer2");
+  $("#footer1").innerHTML = t("footer1", {link: EMU_LINK()}); $("#footer2").textContent = t("footer2"); $("#keys").textContent = t("keysHint");
+  renderTheme(); renderToolbar();
   $("#erinfo").innerHTML = ER ? t("info", {n: fmt(ER.total), g: fmt(GAMES.length), link: EMU_LINK(), d: esc(new Date(ER.updated + "T12:00:00").toLocaleDateString(lang, {day:"numeric", month:"long", year:"numeric"}))})
     + (ER.withDetails < ER.total ? "<br>" + esc(t("progress", {p: (ER.withDetails / ER.total * 100).toLocaleString(lang, {maximumFractionDigits: 1})})) : "") : esc(t("loading"));
   if (!ER) $("#panel").innerHTML = '<div><div class="meta">' + esc(t("loadMeta")) + '</div><h2>' + esc(t("loadH")) + '</h2></div>';
@@ -888,7 +1076,8 @@ function detectDevice(){
 }
 
 renderChipSelect(); renderDevice(); renderFilters(); renderDetected();
-$("#q").addEventListener("input", renderGames);
+let qTimer = null;
+$("#q").addEventListener("input", () => { clearTimeout(qTimer); qTimer = setTimeout(renderGames, 120); });
 window.addEventListener("hashchange", fromHash);
 
 fetch("emuready.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
