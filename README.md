@@ -8,7 +8,8 @@ Elige tu chip Android y un juego para ver qué emulador va mejor según los repo
 - `tools/fetch.mjs`: descarga reportes de la API pública de EmuReady hacia `tools/data/` (`--full` para descarga completa).
 - `tools/covers.mjs`: descarga las portadas de los juegos hacia `tools/data/covers.json` (`--full` recorre todo el catálogo).
 - `tools/details.mjs`: descarga el detalle de cada reporte (FPS promedio y configuración) hacia `tools/data/details.json`, como mucho 1500 por ejecución.
-- `tools/build.mjs`: genera `emuready.json`, `configs.json` (configuraciones, se cargan al abrir un juego) e `index.html`.
+- `tools/build.mjs`: genera `emuready.json` (con pesos por votos, reportes raros y estadísticas), `configs.json`, `index.html`, una página por juego en `games/` y `sitemap.xml`.
+- `assets/game.css`: estilo de las páginas por juego.
 - `.github/workflows/update.yml`: actualización diaria automática (completa el día 1 de cada mes; detalles en relleno gradual).
 
 Actualizar a mano:

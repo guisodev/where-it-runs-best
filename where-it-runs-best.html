@@ -155,6 +155,22 @@ main.wrap > .panel{animation-delay:.3s}
 .addbtn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -12px var(--accent)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;max-width:min(92vw,520px);
   padding:10px 16px;border-radius:14px;font-size:13.5px;animation:rise .4s var(--ease) both}
+.navbtn{border:1px solid var(--glass-edge);background:var(--sunk);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s var(--ease)}
+.navbtn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.navbtn[aria-current="page"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.kpi{border-radius:16px;padding:12px 14px;background:var(--sunk);border:1px solid var(--glass-edge)}
+.kpi b{display:block;font-family:var(--f-display);font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.chart .bar{fill:url(#barGrad)}
+.chart text{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.chart .val{fill:var(--ink);font-size:9.5px}
+.hbar{display:block;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transform-origin:left;animation:grow .8s var(--ease) both}
+.rare li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.rare ul{list-style:none;margin:0;padding:0}
+.rare small{grid-column:1 / -1;color:var(--muted);font-size:12.5px}
+.permalink{font-family:var(--f-mono);font-size:12px}
 .pager{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:16px}
 .pager button{min-width:38px;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--glass-edge);cursor:pointer;
   background:linear-gradient(140deg,var(--sheen),transparent 50%),var(--glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
@@ -244,6 +260,7 @@ footer a{color:inherit}
       <select id="dev" class="devsel" hidden></select>
       <span class="detected" id="detected" hidden></span>
     </div>
+    <a class="navbtn" id="statsNav" href="#stats">Estadísticas</a>
     <div class="lang"><label class="sr" for="lang" id="langLabel">Idioma</label><select id="lang"></select></div>
     <button id="theme" class="themebtn" type="button"></button>
   </div>
@@ -507,6 +524,7 @@ for (const [l, o] of Object.entries({"es":{"thFps":"FPS","fpsBadge":"≈{n} FPS"
 for (const [l, o] of Object.entries({"es":{"devLabel":"Dispositivo","anyDev":"Cualquier dispositivo con este chip","scopeDev":"en {dev}","detected":"Detectado: {gpu}","cardDev":"{s} · {n} en tu dispositivo","devFallback":"Nadie lo ha reportado aún en tu {dev}; se usan los reportes de chips como el tuyo."},"en":{"devLabel":"Device","anyDev":"Any device with this chip","scopeDev":"on {dev}","detected":"Detected: {gpu}","cardDev":"{s} · {n} on your device","devFallback":"No one has reported it on your {dev} yet; reports from chips like yours are used."},"pt":{"devLabel":"Aparelho","anyDev":"Qualquer aparelho com este chip","scopeDev":"no {dev}","detected":"Detectado: {gpu}","cardDev":"{s} · {n} no seu aparelho","devFallback":"Ninguém relatou ainda no seu {dev}; são usados relatos de chips como o seu."},"fr":{"devLabel":"Appareil","anyDev":"Tout appareil avec cette puce","scopeDev":"sur {dev}","detected":"Détecté : {gpu}","cardDev":"{s} · {n} sur votre appareil","devFallback":"Personne ne l'a encore signalé sur votre {dev} ; les rapports de puces comme la vôtre sont utilisés."},"de":{"devLabel":"Gerät","anyDev":"Jedes Gerät mit diesem Chip","scopeDev":"auf {dev}","detected":"Erkannt: {gpu}","cardDev":"{s} · {n} auf deinem Gerät","devFallback":"Noch niemand hat es auf deinem {dev} gemeldet; es werden Berichte von Chips wie deinem genutzt."},"it":{"devLabel":"Dispositivo","anyDev":"Qualsiasi dispositivo con questo chip","scopeDev":"su {dev}","detected":"Rilevato: {gpu}","cardDev":"{s} · {n} sul tuo dispositivo","devFallback":"Nessuno l'ha ancora segnalato sul tuo {dev}; si usano i report di chip come il tuo."}})) Object.assign(STR[l], o);
 for (const [l, o] of Object.entries({"es":{"prev":"Anterior","next":"Siguiente","pageOf":"Página {a} de {b}","countPaged":"{a}–{b} de {n} juegos","pagesLabel":"Páginas"},"en":{"prev":"Previous","next":"Next","pageOf":"Page {a} of {b}","countPaged":"{a}–{b} of {n} games","pagesLabel":"Pages"},"pt":{"prev":"Anterior","next":"Próxima","pageOf":"Página {a} de {b}","countPaged":"{a}–{b} de {n} jogos","pagesLabel":"Páginas"},"fr":{"prev":"Précédent","next":"Suivant","pageOf":"Page {a} sur {b}","countPaged":"{a}–{b} sur {n} jeux","pagesLabel":"Pages"},"de":{"prev":"Zurück","next":"Weiter","pageOf":"Seite {a} von {b}","countPaged":"{a}–{b} von {n} Spielen","pagesLabel":"Seiten"},"it":{"prev":"Precedente","next":"Successiva","pageOf":"Pagina {a} di {b}","countPaged":"{a}–{b} di {n} giochi","pagesLabel":"Pagine"}})) Object.assign(STR[l], o);
 for (const [l, o] of Object.entries({"es":{"sortLabel":"Ordenar","sortReports":"Más reportes","sortRating":"Mejor nota","sortName":"Nombre","sortFps":"Más FPS","viewLabel":"Vista","viewGrid":"Cuadrícula","viewList":"Lista","addReport":"Añadir mi reporte en EmuReady","themeLabel":"Tema","themeAuto":"Automático","themeLight":"Claro","themeDark":"Oscuro","keysHint":"Atajos: / buscar · flechas para moverte · Enter abrir · RePág/AvPág cambiar de página · Esc volver. Con mando: cruceta, A abrir, B volver, LB/RB páginas, Y buscar.","padOn":"Mando conectado: cruceta para moverte, A abrir, B volver, LB/RB cambiar de página"},"en":{"sortLabel":"Sort","sortReports":"Most reports","sortRating":"Best rating","sortName":"Name","sortFps":"Most FPS","viewLabel":"View","viewGrid":"Grid","viewList":"List","addReport":"Add my report on EmuReady","themeLabel":"Theme","themeAuto":"Auto","themeLight":"Light","themeDark":"Dark","keysHint":"Shortcuts: / search · arrows to move · Enter open · PgUp/PgDn change page · Esc back. With a controller: D-pad, A open, B back, LB/RB pages, Y search.","padOn":"Controller connected: D-pad to move, A to open, B to go back, LB/RB to change page"},"pt":{"sortLabel":"Ordenar","sortReports":"Mais relatos","sortRating":"Melhor nota","sortName":"Nome","sortFps":"Mais FPS","viewLabel":"Visualização","viewGrid":"Grade","viewList":"Lista","addReport":"Enviar meu relato no EmuReady","themeLabel":"Tema","themeAuto":"Automático","themeLight":"Claro","themeDark":"Escuro","keysHint":"Atalhos: / buscar · setas para mover · Enter abrir · PgUp/PgDn mudar de página · Esc voltar. Com controle: direcional, A abrir, B voltar, LB/RB páginas, Y buscar.","padOn":"Controle conectado: direcional para mover, A abrir, B voltar, LB/RB mudar de página"},"fr":{"sortLabel":"Trier","sortReports":"Plus de rapports","sortRating":"Meilleure note","sortName":"Nom","sortFps":"Plus de FPS","viewLabel":"Affichage","viewGrid":"Grille","viewList":"Liste","addReport":"Ajouter mon rapport sur EmuReady","themeLabel":"Thème","themeAuto":"Auto","themeLight":"Clair","themeDark":"Sombre","keysHint":"Raccourcis : / rechercher · flèches pour se déplacer · Entrée ouvrir · PgPréc/PgSuiv changer de page · Échap retour. À la manette : croix, A ouvrir, B retour, LB/RB pages, Y rechercher.","padOn":"Manette connectée : croix pour se déplacer, A ouvrir, B retour, LB/RB changer de page"},"de":{"sortLabel":"Sortieren","sortReports":"Meiste Berichte","sortRating":"Beste Bewertung","sortName":"Name","sortFps":"Meiste FPS","viewLabel":"Ansicht","viewGrid":"Raster","viewList":"Liste","addReport":"Meinen Bericht auf EmuReady hinzufügen","themeLabel":"Design","themeAuto":"Automatisch","themeLight":"Hell","themeDark":"Dunkel","keysHint":"Tastenkürzel: / suchen · Pfeile zum Bewegen · Enter öffnen · Bild↑/Bild↓ Seite wechseln · Esc zurück. Mit Controller: Steuerkreuz, A öffnen, B zurück, LB/RB Seiten, Y suchen.","padOn":"Controller verbunden: Steuerkreuz zum Bewegen, A öffnen, B zurück, LB/RB Seite wechseln"},"it":{"sortLabel":"Ordina","sortReports":"Più report","sortRating":"Voto migliore","sortName":"Nome","sortFps":"Più FPS","viewLabel":"Vista","viewGrid":"Griglia","viewList":"Elenco","addReport":"Aggiungi il mio report su EmuReady","themeLabel":"Tema","themeAuto":"Automatico","themeLight":"Chiaro","themeDark":"Scuro","keysHint":"Scorciatoie: / cerca · frecce per muoverti · Invio apri · PagSu/PagGiù cambia pagina · Esc indietro. Con controller: croce, A apri, B indietro, LB/RB pagine, Y cerca.","padOn":"Controller collegato: croce per muoverti, A apri, B indietro, LB/RB cambia pagina"}})) Object.assign(STR[l], o);
+for (const [l, o] of Object.entries({"es":{"statsNav":"Estadísticas","statsMeta":"Datos de EmuReady · {d}","kReports":"Reportes","kGames":"Juegos","kDevices":"Dispositivos","kEmus":"Emuladores","kDetails":"Con FPS y ajustes","kVoted":"Con votos","kFlagged":"Raros (excluidos)","hMonths":"Reportes por mes","hRanks":"Notas en total","hSys":"Consolas","hEmus":"Emuladores más reportados","hDevs":"Dispositivos más reportados","hChips":"Por grupo de chips","statsNote":"Las medianas dan más peso a los reportes votados por la comunidad y no cuentan los reportes raros.","rareHead":"Reportes raros · {n}","rareNote":"No cuentan para la mediana. Puedes revisarlos en EmuReady.","rare_v":"Votado en contra por la comunidad","rare_b":"Mucho mejor que en chips más potentes","rare_w":"Mucho peor que en chips iguales o más débiles (posible error de ajustes)","viewReport":"ver","permalink":"Página del juego","medNote":"Mediana ponderada por votos, sin reportes raros.","back":"Volver"},"en":{"statsNav":"Statistics","statsMeta":"EmuReady data · {d}","kReports":"Reports","kGames":"Games","kDevices":"Devices","kEmus":"Emulators","kDetails":"With FPS & settings","kVoted":"With votes","kFlagged":"Unusual (excluded)","hMonths":"Reports per month","hRanks":"All ratings","hSys":"Consoles","hEmus":"Most reported emulators","hDevs":"Most reported devices","hChips":"By chip group","statsNote":"Medians give more weight to community-upvoted reports and leave out unusual reports.","rareHead":"Unusual reports · {n}","rareNote":"They don't count toward the median. You can review them on EmuReady.","rare_v":"Downvoted by the community","rare_b":"Much better than on stronger chips","rare_w":"Much worse than on equal or weaker chips (possible settings issue)","viewReport":"view","permalink":"Game page","medNote":"Vote-weighted median, unusual reports excluded.","back":"Back"},"pt":{"statsNav":"Estatísticas","statsMeta":"Dados do EmuReady · {d}","kReports":"Relatos","kGames":"Jogos","kDevices":"Aparelhos","kEmus":"Emuladores","kDetails":"Com FPS e ajustes","kVoted":"Com votos","kFlagged":"Incomuns (excluídos)","hMonths":"Relatos por mês","hRanks":"Notas no total","hSys":"Consoles","hEmus":"Emuladores mais relatados","hDevs":"Aparelhos mais relatados","hChips":"Por grupo de chips","statsNote":"As medianas dão mais peso aos relatos votados pela comunidade e não contam os relatos incomuns.","rareHead":"Relatos incomuns · {n}","rareNote":"Não contam para a mediana. Você pode revisá-los no EmuReady.","rare_v":"Votado contra pela comunidade","rare_b":"Muito melhor que em chips mais potentes","rare_w":"Muito pior que em chips iguais ou mais fracos (possível erro de ajuste)","viewReport":"ver","permalink":"Página do jogo","medNote":"Mediana ponderada por votos, sem relatos incomuns.","back":"Voltar"},"fr":{"statsNav":"Statistiques","statsMeta":"Données EmuReady · {d}","kReports":"Rapports","kGames":"Jeux","kDevices":"Appareils","kEmus":"Émulateurs","kDetails":"Avec FPS et réglages","kVoted":"Avec votes","kFlagged":"Inhabituels (exclus)","hMonths":"Rapports par mois","hRanks":"Toutes les notes","hSys":"Consoles","hEmus":"Émulateurs les plus signalés","hDevs":"Appareils les plus signalés","hChips":"Par groupe de puces","statsNote":"Les médianes donnent plus de poids aux rapports approuvés par la communauté et excluent les rapports inhabituels.","rareHead":"Rapports inhabituels · {n}","rareNote":"Ils ne comptent pas dans la médiane. Vous pouvez les consulter sur EmuReady.","rare_v":"Désapprouvé par la communauté","rare_b":"Bien meilleur que sur des puces plus puissantes","rare_w":"Bien pire que sur des puces égales ou plus faibles (réglage probablement en cause)","viewReport":"voir","permalink":"Page du jeu","medNote":"Médiane pondérée par les votes, rapports inhabituels exclus.","back":"Retour"},"de":{"statsNav":"Statistiken","statsMeta":"EmuReady-Daten · {d}","kReports":"Berichte","kGames":"Spiele","kDevices":"Geräte","kEmus":"Emulatoren","kDetails":"Mit FPS & Einstellungen","kVoted":"Mit Stimmen","kFlagged":"Auffällig (ausgeschlossen)","hMonths":"Berichte pro Monat","hRanks":"Alle Bewertungen","hSys":"Konsolen","hEmus":"Meistgemeldete Emulatoren","hDevs":"Meistgemeldete Geräte","hChips":"Nach Chipgruppe","statsNote":"Die Mediane gewichten von der Community positiv bewertete Berichte stärker und lassen auffällige Berichte weg.","rareHead":"Auffällige Berichte · {n}","rareNote":"Sie zählen nicht zum Median. Du kannst sie auf EmuReady prüfen.","rare_v":"Von der Community abgelehnt","rare_b":"Viel besser als auf stärkeren Chips","rare_w":"Viel schlechter als auf gleich starken oder schwächeren Chips (mögliches Einstellungsproblem)","viewReport":"ansehen","permalink":"Spielseite","medNote":"Nach Stimmen gewichteter Median, ohne auffällige Berichte.","back":"Zurück"},"it":{"statsNav":"Statistiche","statsMeta":"Dati di EmuReady · {d}","kReports":"Report","kGames":"Giochi","kDevices":"Dispositivi","kEmus":"Emulatori","kDetails":"Con FPS e impostazioni","kVoted":"Con voti","kFlagged":"Anomali (esclusi)","hMonths":"Report al mese","hRanks":"Tutti i voti","hSys":"Console","hEmus":"Emulatori più segnalati","hDevs":"Dispositivi più segnalati","hChips":"Per gruppo di chip","statsNote":"Le mediane danno più peso ai report votati dalla community ed escludono i report anomali.","rareHead":"Report anomali · {n}","rareNote":"Non contano per la mediana. Puoi verificarli su EmuReady.","rare_v":"Votato contro dalla community","rare_b":"Molto meglio che su chip più potenti","rare_w":"Molto peggio che su chip uguali o più deboli (possibile problema di impostazioni)","viewReport":"vedi","permalink":"Pagina del gioco","medNote":"Mediana ponderata per voti, senza report anomali.","back":"Indietro"}})) Object.assign(STR[l], o);
 const LANGS = [["es","Español"],["en","English"],["pt","Português"],["fr","Français"],["de","Deutsch"],["it","Italiano"]];
 
 const pickLang = () => {
@@ -609,6 +627,15 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 const fmt = n => n.toLocaleString(lang);
 const median = a => { const s = [...a].sort((x,y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
+const wOf = r => r.length > 6 ? r[6] : 1;
+function wmedian(rows){
+  const a = rows.filter(r => wOf(r) > 0).sort((x, y) => x[2] - y[2]);
+  if (!a.length) return median(rows.map(r => r[2]));
+  const tot = a.reduce((s, r) => s + wOf(r), 0);
+  let acc = 0;
+  for (const r of a){ acc += wOf(r); if (acc >= tot / 2) return r[2]; }
+  return a[a.length - 1][2];
+}
 const sameTier = (cid, me) => { const c = chipById[cid]; return c && c.tier === me.tier && (c.gpu === "adreno") === (me.gpu === "adreno"); };
 
 // ───────── Datos ─────────
@@ -630,13 +657,13 @@ function byEmulator(rows){
   const m = new Map();
   for (const r of rows){ if (!m.has(r[1])) m.set(r[1], []); m.get(r[1]).push(r); }
   return [...m].map(([e, rs]) => { const ps = rs.map(r => r[2]), fps = rs.map(fpsOf).filter(x => x !== null);
-      return {id: e, emu: ER.emus[e], rs, ps, n: ps.length, med: median(ps), fps: fps.length ? median(fps) : null, nfps: fps.length}; })
+      return {id: e, emu: ER.emus[e], rs, ps, n: ps.length, med: wmedian(rs), fps: fps.length ? median(fps) : null, nfps: fps.length}; })
     .sort((a,b) => a.med - b.med || b.n - a.n);
 }
 function bySoc(rows){
   const m = new Map();
-  for (const r of rows){ if (r[0] < 0) continue; if (!m.has(r[0])) m.set(r[0], []); m.get(r[0]).push(r[2]); }
-  return [...m].map(([s, ps]) => ({soc: ER.socs[s], ps, n: ps.length, med: median(ps)}))
+  for (const r of rows){ if (r[0] < 0) continue; if (!m.has(r[0])) m.set(r[0], []); m.get(r[0]).push(r); }
+  return [...m].map(([s, rs]) => ({soc: ER.socs[s], ps: rs.map(r => r[2]), n: rs.length, med: wmedian(rs)}))
     .sort((a,b) => b.n - a.n || a.med - b.med);
 }
 const devName = () => dev >= 0 ? ER.devs[dev].n : "";
@@ -816,10 +843,55 @@ function renderCfg(g, sc, emus){
 }
 
 function swapIn(p){ p.classList.remove("swap"); void p.offsetWidth; p.classList.add("swap"); }
+function renderRare(g){
+  if (!g.x || !g.x.length) return "";
+  const items = g.x.map(([i, code, id]) => {
+    const r = g.r[i], where = r[3] >= 0 ? ER.devs[r[3]].n : r[0] >= 0 ? ER.socs[r[0]].n : "?";
+    return `<li><span><strong>${esc(ER.emus[r[1]])}</strong> · ${esc(where)}</span>${pill(r[2])}
+      <small>${esc(t("rare_" + code))} · <a href="https://www.emuready.com/listings/${esc(id)}" target="_blank" rel="noopener">${esc(t("viewReport"))}</a></small></li>`;
+  }).join("");
+  return `<div class="block rare"><h4>${esc(t("rareHead", {n: g.x.length}))}</h4><p class="meta" style="margin:0 0 4px">${esc(t("rareNote"))}</p><ul>${items}</ul></div>`;
+}
+// Panel de estadísticas (#stats)
+function renderStats(){
+  const S = ER.stats, f = n => fmt(n);
+  const kp = (v, k) => `<div class="kpi"><b>${v}</b><span>${esc(t(k))}</span></div>`;
+  const pct = n => (n / ER.total * 100).toLocaleString(lang, {maximumFractionDigits: 1}) + " %";
+  // Barras por mes (SVG a escala)
+  const ms = S.months, max = Math.max(...ms.map(m => m[1]), 1), W = 560, H = 170, pad = 22, bw = (W - 8) / ms.length;
+  const bars = ms.map(([ym, n], i) => {
+    const bh = Math.max(1, (n / max) * (H - pad - 18)), x = 4 + i * bw, y = H - pad - bh;
+    const d = new Date(ym + "-15T12:00:00");
+    const lbl = d.toLocaleDateString(lang, {month: "short"}) + (d.getMonth() === 0 || i === 0 ? " " + String(d.getFullYear()).slice(2) : "");
+    return `<rect class="bar" x="${(x + 2).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${bh.toFixed(1)}" rx="3"><title>${ym}: ${n}</title></rect>
+      <text class="val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle">${n}</text>
+      <text x="${(x + bw / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle">${esc(lbl)}</text>`;
+  }).join("");
+  const chart = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("hMonths"))}"><defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent-2)"/></linearGradient></defs>${bars}</svg>`;
+  const allRanks = S.ranks.flatMap((n, i) => Array(n).fill(i + 1));
+  const table = (rows, label, nameFn) => {
+    const mx = Math.max(...rows.map(r => r[1]), 1);
+    return `<div class="tblwrap"><table class="tbl"><thead><tr><th>${esc(label)}</th><th class="num">${t("thRep")}</th><th style="width:30%"></th><th>${t("thMed")}</th></tr></thead><tbody>${rows.map(([n, c, m]) =>
+      `<tr><td>${esc(nameFn ? nameFn(n) : n)}</td><td class="num">${f(c)}</td><td><span class="hbar" style="width:${Math.max(3, c / mx * 100).toFixed(0)}%"></span></td><td>${pill(m)}</td></tr>`).join("")}</tbody></table></div>`;
+  };
+  return `<div><div class="meta">${esc(t("statsMeta", {d: new Date(ER.updated + "T12:00:00").toLocaleDateString(lang, {day: "numeric", month: "long", year: "numeric"})}).toLocaleUpperCase(lang))}</div><h2>${esc(t("statsNav"))}</h2></div>
+    <div class="kpis">${kp(f(ER.total), "kReports")}${kp(f(GAMES.length), "kGames")}${kp(f(S.devices), "kDevices")}${kp(f(ER.emus.length), "kEmus")}
+      ${kp(pct(ER.withDetails), "kDetails")}${kp(f(S.voted), "kVoted")}${kp(f(S.flagged), "kFlagged")}</div>
+    <div class="block"><h4>${esc(t("hMonths"))}</h4>${chart}</div>
+    <div class="block"><h4>${esc(t("hRanks"))}</h4>${distBar(allRanks)}
+      <div class="legend" style="margin-top:8px">${S.ranks.map((n, i) => `<span><i class="c-${RANK_K[i + 1]}"></i>${esc(rankName(i + 1))} · ${f(n)}</span>`).join("")}</div></div>
+    <div class="block"><h4>${esc(t("hSys"))}</h4>${table(S.sys, t("thSys"))}</div>
+    <div class="block"><h4>${esc(t("hEmus"))}</h4>${table(S.emus, t("thEmu"))}</div>
+    <div class="block"><h4>${esc(t("hDevs"))}</h4>${table(S.devs, t("devLabel"))}</div>
+    <div class="block"><h4>${esc(t("hChips"))}</h4>${table(S.chips, t("thChip"), c => chipById[c] ? chipName(chipById[c]) : c)}</div>
+    <p class="meta" style="margin:0">${esc(t("statsNote"))}</p>`;
+}
 function renderPanel(){
   const p = $("#panel");
   if (!ER) return;
   swapIn(p);
+  $("#statsNav").setAttribute("aria-current", current === "stats" ? "page" : "false");
+  if (current === "stats"){ p.innerHTML = renderStats(); return; }
   const g = GAMES.find(x => x.hid === current);
   if (!g){ p.innerHTML = renderOverview(); return; }
   const sc = scopeOf(g, chip), emus = byEmulator(sc.rows), top = emus[0];
@@ -839,12 +911,15 @@ function renderPanel(){
     <div class="block"><h4>${esc(t("emusHead", {n: sc.rows.length, scope: scopeText(sc.scope, chip)}))}</h4>
       <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thEmu")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th class="num">${t("thFps")}</th><th>${t("thMed")}</th></tr></thead>
       <tbody>${emus.map(e => `<tr><td><strong>${esc(e.emu)}</strong></td><td class="num">${e.n}</td><td class="bar">${distBar(e.ps)}</td><td class="num">${fpsText(e.fps, e.nfps)}</td><td>${pill(e.med)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="meta" style="margin:6px 0 0">${esc(t("medNote"))}</p>
     </div>
     ${renderCfg(g, sc, emus)}
     ${socs.length ? `<div class="block"><h4>${esc(t("socsHead"))}</h4>
       <div class="tblwrap"><table class="tbl"><thead><tr><th>${t("thChip")}</th><th class="num">${t("thRep")}</th><th>${t("thDist")}</th><th>${t("thMed")}</th></tr></thead>
       <tbody>${socs.map(s => `<tr class="${s.soc.c === chip.id ? "mine" : ""}"><td>${esc(s.soc.n)}</td><td class="num">${s.n}</td><td class="bar">${distBar(s.ps)}</td><td>${pill(s.med)}</td></tr>`).join("")}</tbody></table></div>
     </div>` : ""}
+    ${renderRare(g)}
+    ${g.u ? `<a class="permalink" href="games/${esc(g.u)}/">↗ ${esc(t("permalink"))}</a>` : ""}
     <p class="meta" style="margin:0">${t("moreLink", {link: `<a href="https://www.emuready.com/games/${esc(g.id)}" target="_blank" rel="noopener">${esc(t("seeOn", {g: g.t}))}</a>`})}</p>
     <a class="addbtn" href="https://www.emuready.com/listings/new?gameId=${encodeURIComponent(g.id)}" target="_blank" rel="noopener">＋ ${esc(t("addReport"))}</a>
     ${legend()}`;
@@ -879,7 +954,7 @@ function renderOverview(){
 
 function fromHash(){
   const h = location.hash.slice(1);
-  const next = GAMES.some(g => g.hid === h) ? h : null;
+  const next = h === "stats" ? "stats" : GAMES.some(g => g.hid === h) ? h : null;
   if (next !== current) cfgEmu = null;
   current = next;
   renderGames(); renderPanel();
@@ -984,7 +1059,7 @@ function applyStatic(){
   document.documentElement.lang = lang;
   document.title = t("docTitle");
   $("#brand").innerHTML = t("brand"); $("#tag").textContent = t("tag");
-  $("#deviceLabel").textContent = t("device"); $("#devLabel").textContent = t("devLabel"); $("#langLabel").textContent = t("langLabel");
+  $("#deviceLabel").textContent = t("device"); $("#statsNav").textContent = "📊 " + t("statsNav"); $("#devLabel").textContent = t("devLabel"); $("#langLabel").textContent = t("langLabel");
   $("#h1").textContent = t("h1"); $("#lead").textContent = t("lead");
   $("#q").placeholder = t("search"); $("#platLabel").textContent = t("platLabel");
   $("#filters").setAttribute("aria-label", t("filtersLabel")); $("#empty").textContent = t("empty");

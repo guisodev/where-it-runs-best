@@ -73,6 +73,6 @@ jobs:
             sleep 10
           done
           (cd tools && node build.mjs)
-          git add -A emuready.json configs.json index.html
+          git add -A emuready.json configs.json index.html games sitemap.xml robots.txt
           git diff --cached --quiet || git commit -q --amend --no-edit
           git push

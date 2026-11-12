@@ -1,0 +1,53 @@
+/* Estilo de las páginas por juego (mismo lenguaje de cristal que la app) */
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+:root{
+  --bg:#E8EBF4; --ink:#121624; --muted:#56607A; --line:rgba(18,22,36,.10);
+  --glass:rgba(255,255,255,.55); --glass-edge:rgba(255,255,255,.8); --sheen:rgba(255,255,255,.65); --shade:rgba(30,36,80,.16); --sunk:rgba(18,22,36,.06);
+  --accent:#D6336C; --accent-2:#6A4CF0;
+  --b1:#FF9CC2; --b2:#A797FF; --b3:#7FE7E3;
+  --ok:#1E8F55; --good:#5C9A1E; --warn:#C28400; --bad:#D5582A; --no:#B3263A;
+  --display:"Chakra Petch","Segoe UI",system-ui,sans-serif; --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#090B12; --ink:#EEF0F7; --muted:#9BA3B7; --line:rgba(255,255,255,.09);
+  --glass:rgba(26,30,44,.5); --glass-edge:rgba(255,255,255,.14); --sheen:rgba(255,255,255,.1); --shade:rgba(0,0,0,.55); --sunk:rgba(255,255,255,.06);
+  --accent:#FF6E9C; --accent-2:#9C8BFF; --b1:#A42A63; --b2:#4632C2; --b3:#0B7F86;
+  --ok:#3CC47F; --good:#9BCB4A; --warn:#E8B23A; --bad:#F07A4A; --no:#F0566C; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);min-height:100vh}
+a{color:var(--accent)}
+.aurora{position:fixed;inset:-12vmax;z-index:-1;filter:blur(70px);opacity:.9;pointer-events:none}
+.aurora i{position:absolute;width:55vmax;height:55vmax;border-radius:50%}
+.aurora i:nth-child(1){top:0;left:0;background:radial-gradient(circle,var(--b1),transparent 62%)}
+.aurora i:nth-child(2){top:10%;right:-5%;background:radial-gradient(circle,var(--b2),transparent 62%)}
+.aurora i:nth-child(3){bottom:-10%;left:25%;background:radial-gradient(circle,var(--b3),transparent 62%)}
+header,main,footer{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{padding-block:18px 6px}
+.brand{font:700 22px var(--display);color:var(--ink);text-decoration:none}
+.brand b{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+main{display:grid;gap:18px;padding-block:12px 24px}
+.glass{background:linear-gradient(140deg,var(--sheen),transparent 42%),var(--glass);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);
+  border:1px solid var(--glass-edge);border-radius:22px;padding:20px;box-shadow:inset 0 1px 0 var(--sheen),0 18px 40px -18px var(--shade)}
+.hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.hero > div{flex:1 1 280px;min-width:0}
+.cover{width:120px;height:160px;object-fit:cover;border-radius:14px;box-shadow:0 14px 30px -12px var(--shade)}
+h1{font:600 clamp(26px,4vw,38px)/1.1 var(--display);margin:4px 0 10px;text-wrap:balance}
+h2{font:500 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.meta{font:12px var(--mono);color:var(--muted);letter-spacing:.04em;margin:0}
+.best{margin:0 0 14px}
+.fps{font:12.5px var(--mono);color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:0}
+.btn{display:inline-block;padding:9px 16px;border-radius:999px;border:1px solid var(--glass-edge);background:var(--sunk);color:var(--ink);text-decoration:none;font-weight:500}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+td{padding:8px 6px;border-bottom:1px solid var(--line)}
+.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+th:last-child,td:last-child{text-align:right}
+.muted{color:var(--muted);font-size:13px}
+.pill{font:500 12px var(--mono);border-radius:999px;padding:3px 10px;white-space:nowrap;color:#fff}
+@media (prefers-color-scheme: dark){.pill{color:#0F1115}}
+.v-ok{background:var(--ok)} .v-good{background:var(--good)} .v-warn{background:var(--warn)} .v-bad{background:var(--bad)} .v-no{background:var(--no)}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0}
+footer{color:var(--muted);font-size:13px;padding-block:0 32px}

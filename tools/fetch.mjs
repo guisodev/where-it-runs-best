@@ -30,6 +30,7 @@ const slim = l => ({
   dev: [l.device?.brand?.name, l.device?.modelName].filter(Boolean).join(" "),
   soc: l.device?.soc?.name || null, socM: l.device?.soc?.manufacturer || null, gpu: l.device?.soc?.gpuModel || null,
   emu: l.emulator?.name, p: l.performance?.rank, date: l.createdAt,
+  up: l.upvoteCount || 0, down: l.downvoteCount || 0,
 });
 const writeAtomic = (file, data) => { fs.writeFileSync(file + ".tmp", JSON.stringify(data)); fs.renameSync(file + ".tmp", file); };
 
